@@ -1,0 +1,5 @@
+Flask==1.1.2
+PyMySQL==1.0.2
+docker==4.4.1
+python-qbittorrent==0.4.2
+transmission-clutch

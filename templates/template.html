@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+    <head>
+        <link rel='stylesheet' href="{{url_for('static', filename='style.css')}}">
+    </head>
+    <body>
+        <div id=wrapper>
+            <header>
+                <span>
+                    <nav id=links>
+                        <ul>
+                            {% for name, link in links %}
+                            <li>
+                                <a href={{link}}>{{name}}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                </span>         
+                <div id=headerflex>
+                    <div id=headers>
+                        <a href="/" id=TheTitle><h1>{{title}}</h1></a>
+                        <nav id=articles>
+                            <ul>
+                                {% for name, link in articles %}
+                                <li>
+                                    <a href={{link}}>{{name}}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </nav>
+                    </div>
+                    <a href="/">
+                        <img alt={{image[0]}} src={{image[1]}}>
+                    </a>         
+                </div>
+            </header>
+            <article>
+                {% block content %}
+                {% endblock %}
+            </article>
+            <footer>
+                <p>Web design is my passion</p>
+            </footer>
+        </div>
+    </body>
+</html>
