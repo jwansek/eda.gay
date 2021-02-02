@@ -82,6 +82,26 @@ nav a {
     background-color: white;
 }
 
+article section table {
+    font-family: monospace;
+}
+
+article section table td {
+    text-align: right;
+}
+
+.running {
+    background-color: green;
+    padding: 1, 1, 1, 1;
+    margin: 0, 0, 2, 3;
+}
+
+.notRunning {
+    background-color: red;
+    padding: 1, 1, 1, 1;
+    margin: 0, 0, 2, 3;
+}
+
 header img {
     max-height: 110px;
 }

@@ -1,8 +1,12 @@
 import qbittorrent
+import multiprocessing
 import docker
 import clutch
-import app
+import pihole
+import queue
 import json
+import time
+import app
 
 def humanbytes(B):
    'Return the given bytes as a human friendly KB, MB, GB, or TB string'
@@ -23,13 +27,41 @@ def humanbytes(B):
    elif TB <= B:
       return '{0:.2f} TB'.format(B/TB)
 
+def timeout(func):
+    # cant get this to work with queue.Queue() for some reason?
+    # this works but Manager() uses an extra thread than Queue()
+    manager = multiprocessing.Manager()
+    returnVan = manager.list()
+    ti = time.time()
+   
+    def runFunc(q, func):
+        q.append(func())
+
+    def beginTimeout():
+        t = multiprocessing.Process(target = runFunc, args = (returnVan, func))
+        t.start()
+
+        t.join(timeout = app.CONFIG["servicetimeout"].getint("seconds"))
+
+        # print("Request took:", time.time() - ti)
+        try:
+            return returnVan[0]
+        except IndexError:
+            if t.is_alive():
+                t.terminate()
+
+    return beginTimeout
+
+@timeout
 def get_docker_stats():
+
     client = docker.DockerClient(base_url = "tcp://%s:%s" % (app.CONFIG["docker"]["url"], app.CONFIG["docker"]["port"]))
     return {
         container.name: container.status
         for container in client.containers.list(all = True)
     }
 
+@timeout
 def get_qbit_stats():
     numtorrents = 0
     bytes_dl = 0
@@ -46,9 +78,10 @@ def get_qbit_stats():
        "bytes_dl": humanbytes(bytes_dl),
        "bytes_up": humanbytes(bytes_up),
        "num": numtorrents,
-       "ratio": bytes_up / bytes_dl
+       "ratio": "%.3f" % (float(bytes_up) / float(bytes_dl))
     }
 
+@timeout
 def get_trans_stats():
     client = clutch.client.Client(
         address = "http://%s:%s/transmission/rpc" % (app.CONFIG["transmission"]["url"], app.CONFIG["transmission"]["port"]),
@@ -60,9 +93,20 @@ def get_trans_stats():
        "bytes_dl": humanbytes(stats["arguments"]["cumulative_stats"]["downloaded_bytes"]),
        "bytes_up": humanbytes(stats["arguments"]["cumulative_stats"]["uploaded_bytes"]),
        "num": stats["arguments"]["torrent_count"],
-       "ratio": stats["arguments"]["cumulative_stats"]["uploaded_bytes"] / stats["arguments"]["cumulative_stats"]["downloaded_bytes"]
+       "ratio": "%.3f" % (float(stats["arguments"]["cumulative_stats"]["uploaded_bytes"]) / float(stats["arguments"]["cumulative_stats"]["downloaded_bytes"]))
+    }
+
+@timeout
+def get_pihole_stats():
+    ph = pihole.PiHole(app.CONFIG["pihole"]["url"])
+    return {
+        "status": ph.status,
+        "queries": ph.total_queries,
+        "clients": ph.unique_clients,
+        "percentage": ph.ads_percentage,
+        "blocked": ph.blocked
     }
 
 
 if __name__ == "__main__":
-    print(get_trans_stats())
+    print(get_qbit_stats())

@@ -1,5 +1,6 @@
 import configparser
 import database
+import services
 import flask
 
 app = flask.Flask(__name__)
@@ -27,8 +28,20 @@ def discord():
     with database.Database() as db:
         return flask.render_template(
             "discord.html", 
-            **get_template_items("Discord", db),
+            **get_template_items("discord", db),
             discord = CONFIG["discord"]["username"]
+        )
+
+@app.route("/services")
+def serve_services():
+    with database.Database() as db:
+        return flask.render_template(
+            "services.html",
+            **get_template_items("services", db),
+            docker = services.get_docker_stats(),
+            qbit = services.get_qbit_stats(),
+            trans = services.get_trans_stats(),
+            pihole = services.get_pihole_stats()
         )
 
 if __name__ == "__main__":

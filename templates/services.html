@@ -1,0 +1,105 @@
+{% extends "template.html" %}
+{% block content %}
+<article id=statusTables>
+    <section id=docker>
+        <h2>docker</h2>
+        {% if docker == None %}
+            <p>Couldn't access the docker API. Is sherpa running?</p>
+        {% else %}
+            <table>
+                {% for name, status in docker.items() %}
+                    <tr>
+                        <td>{{name}}</td>
+                        {% if status == "running" %}
+                            <td class=running>{{status}}</td>
+                        {% else %}
+                            <td class=notRunning>{{status}}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+    </section>
+    <section id="torrents">
+        <h2>qbittorrent</h2>
+        {% if qbit == None %}
+            <p>Couldn't access the qbittorrent API. Is docker container running?</p>
+        {% else %}
+            <table>
+                <tr>
+                    <td>downloaded</td>
+                    <td>{{qbit["bytes_dl"]}}</td>
+                </tr>
+                <tr>
+                    <td>uploaded</td>
+                    <td>{{qbit["bytes_up"]}}</td>
+                </tr>
+                <tr>
+                    <td>torrents</td>
+                    <td>{{qbit["num"]}}</td>
+                </tr>
+                <tr>
+                    <td>ratio</td>
+                    <td>{{qbit["ratio"]}}</td>
+                </tr>
+            </table>
+        {% endif %}
+        <h2>transmission</h2>
+        {% if trans == None %}
+            <p>Couldn't access the transmission API. Is docker container running?</p>
+        {% else %}
+            <table>
+                <tr>
+                    <td>downloaded</td>
+                    <td>{{trans["bytes_dl"]}}</td>
+                </tr>
+                <tr>
+                    <td>uploaded</td>
+                    <td>{{trans["bytes_up"]}}</td>
+                </tr>
+                <tr>
+                    <td>torrents</td>
+                    <td>{{trans["num"]}}</td>
+                </tr>
+                <tr>
+                    <td>ratio</td>
+                    <td>{{trans["ratio"]}}</td>
+                </tr>
+            </table>
+        {% endif %}
+    </section>
+    <section id=pihole>
+        <h2>pihole</h2>
+        {% if pihole == None %}
+            <p>Couldn't access the pihole API. Is docker container running?</p>
+        {% else %}
+            <table>
+                <tr>
+                    <td>status</td>
+                    {% if pihole["status"] == "enabled" %}
+                        <td class=running>{{pihole["status"]}}</td>
+                    {% else %}
+                        <td class=notRunning>{{pihole["status"]}}</td>
+                    {% endif %}
+                </tr>
+                <tr>
+                    <td>queries</td>
+                    <td>{{pihole["queries"]}}</td>
+                </tr>
+                <tr>
+                    <td>clients</td>
+                    <td>{{pihole["clients"]}}</td>
+                </tr>
+                <tr>
+                    <td>percentage blocked</td>
+                    <td>{{pihole["percentage"]}}%</td>
+                </tr>
+                <tr>
+                    <td>blocked</td>
+                    <td>{{pihole["blocked"]}}</td>
+                </tr>
+            </table>
+        {% endif %}
+    </section>
+</article>
+{% endblock %}
