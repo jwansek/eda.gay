@@ -1,4 +1,6 @@
+!README.md
 edaweb.conf
+*.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

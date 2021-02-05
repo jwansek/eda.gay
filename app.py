@@ -1,4 +1,5 @@
 import configparser
+import webbrowser
 import database
 import services
 import flask
@@ -10,7 +11,7 @@ CONFIG.read("edaweb.conf")
 def get_template_items(title, db):
     return {
         "links": db.get_header_links(),
-        "image": db.get_image("telegrampic"),
+        "image": db.get_image("twitterpic"),
         "title": title,
         "articles": db.get_header_articles()
     }
@@ -43,6 +44,17 @@ def serve_services():
             trans = services.get_trans_stats(),
             pihole = services.get_pihole_stats()
         )
+
+@app.route("/preview")
+def preview():
+    import os
+    if "PREVIEW" in os.environ:
+        with database.Database() as db:
+            return flask.render_template_string(os.environ["PREVIEW"], **get_template_items(os.environ["PREVIEW_TITLE"], db))
+    else:
+        return "page for internal use only"
+
+    
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", debug = True)

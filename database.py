@@ -30,4 +30,4 @@ class Database:
 
 if __name__ == "__main__":
     with Database() as db:
-        print(db.get_header_articles())
+        print(db.get_image("headerImage"))

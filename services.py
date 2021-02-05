@@ -1,5 +1,6 @@
-import qbittorrent
 import multiprocessing
+import qbittorrent
+import datetime
 import docker
 import clutch
 import pihole
@@ -104,9 +105,11 @@ def get_pihole_stats():
         "queries": ph.total_queries,
         "clients": ph.unique_clients,
         "percentage": ph.ads_percentage,
-        "blocked": ph.blocked
+        "blocked": ph.blocked,
+        "domains": ph.domain_count,
+        "last_updated": str(datetime.datetime.fromtimestamp(ph.gravity_last_updated["absolute"]))
     }
 
 
 if __name__ == "__main__":
-    print(get_qbit_stats())
+    print(get_pihole_stats())

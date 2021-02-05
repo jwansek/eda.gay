@@ -95,8 +95,16 @@
                     <td>{{pihole["percentage"]}}%</td>
                 </tr>
                 <tr>
-                    <td>blocked</td>
+                    <td>blocked requests</td>
                     <td>{{pihole["blocked"]}}</td>
+                </tr>
+                <tr>
+                    <td>domains in blocklist</td>
+                    <td>{{pihole["domains"]}}</td>
+                </tr>
+                <tr>
+                    <td>last updated</td>
+                    <td>{{pihole["last_updated"]}}</td>
                 </tr>
             </table>
         {% endif %}
