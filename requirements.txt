@@ -1,8 +1,10 @@
-python_qbittorrent==0.4.2
 PyMySQL==1.0.2
+python_qbittorrent==0.4.2
 Flask==1.1.2
-PiHole_api==2.6
-clutch==0.1a2
-docker_py==1.10.6
+PiHole_api
+transmission-clutch
+dataclasses
+docker
 pihole==0.1.2
+Pillow==8.1.0
 qbittorrent==0.1.6

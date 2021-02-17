@@ -90,6 +90,13 @@ article section table td {
     text-align: right;
 }
 
+aside {
+    width: 30%;
+    padding-left: 15px;
+    margin-left: 15px;
+    float: right;
+}
+
 .running {
     background-color: green;
     padding: 1, 1, 1, 1;

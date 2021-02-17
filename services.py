@@ -33,7 +33,7 @@ def timeout(func):
     # this works but Manager() uses an extra thread than Queue()
     manager = multiprocessing.Manager()
     returnVan = manager.list()
-    ti = time.time()
+    # ti = time.time()
    
     def runFunc(q, func):
         q.append(func())
