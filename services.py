@@ -3,7 +3,7 @@ import qbittorrent
 import datetime
 import docker
 import clutch
-import pihole
+import pihole as ph
 import queue
 import json
 import time
@@ -55,7 +55,6 @@ def timeout(func):
 
 @timeout
 def get_docker_stats():
-
     client = docker.DockerClient(base_url = "tcp://%s:%s" % (app.CONFIG["docker"]["url"], app.CONFIG["docker"]["port"]))
     return {
         container.name: container.status
@@ -99,17 +98,17 @@ def get_trans_stats():
 
 @timeout
 def get_pihole_stats():
-    ph = pihole.PiHole(app.CONFIG["pihole"]["url"])
+    pihole = ph.PiHole(app.CONFIG["pihole"]["url"])
     return {
-        "status": ph.status,
-        "queries": ph.total_queries,
-        "clients": ph.unique_clients,
-        "percentage": ph.ads_percentage,
-        "blocked": ph.blocked,
-        "domains": ph.domain_count,
-        "last_updated": str(datetime.datetime.fromtimestamp(ph.gravity_last_updated["absolute"]))
+        "status": pihole.status,
+        "queries": pihole.total_queries,
+        "clients": pihole.unique_clients,
+        "percentage": pihole.ads_percentage,
+        "blocked": pihole.blocked,
+        "domains": pihole.domain_count,
+        "last_updated": str(datetime.datetime.fromtimestamp(pihole.gravity_last_updated["absolute"]))
     }
 
 
 if __name__ == "__main__":
-    print(get_pihole_stats())
+    print(get_qbit_stats())
