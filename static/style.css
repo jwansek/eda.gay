@@ -1,6 +1,7 @@
 html {
     background-color: black;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    font-family: 'Open Sans', sans-serif;
+    font-size: small;
 }
 
 body {
@@ -21,7 +22,7 @@ body {
 }
 
 header {
-    background-color: #8fbce7;
+    background-color: #f1f3f3;
 }
 
 
@@ -49,6 +50,11 @@ header span nav ul {
 
 header span nav ul li a {
     color: white;
+}
+
+header div {
+    padding-left: 30px;
+    padding-bottom: 10px;
 }
 
 nav ul {

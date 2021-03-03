@@ -4,6 +4,7 @@ import webbrowser
 import datetime
 import database
 import services
+import random
 import parser
 import flask
 import os
@@ -12,13 +13,35 @@ import io
 app = flask.Flask(__name__)
 CONFIG = configparser.ConfigParser()
 CONFIG.read("edaweb.conf")
+shown_images = set()
+
+def get_pfp_img(db:database.Database):
+    global shown_images
+    dbimg = db.get_pfp_images()
+    if len(shown_images) == len(dbimg):
+        shown_images = set()
+    folder = set(dbimg).difference(shown_images)
+    choice = random.choice(list(folder))
+    shown_images.add(choice)
+    return choice
+
+def get_correct_article_headers(db:database.Database, title):
+    db_headers = list(db.get_header_articles())
+    if title in [i[0] for i in db_headers]:
+        out = []
+        for i in db_headers:
+            if i[0] != title:
+                out.append(i)
+        return out + [("index", "/")]
+    else:
+        return db_headers + [("index", "/")]
 
 def get_template_items(title, db):
     return {
         "links": db.get_header_links(),
-        "image": db.get_pfp_image(),
+        "image": get_pfp_img(db),
         "title": title,
-        "articles": db.get_header_articles()
+        "articles": get_correct_article_headers(db, title)
     }
 
 @app.route("/")
@@ -26,7 +49,7 @@ def index():
     with database.Database() as db:
         return flask.render_template(
             "index.html", 
-            **get_template_items("edaweb.co.uk", db)
+            **get_template_items("eda.gay", db)
         )
 
 @app.route("/discord")
@@ -54,7 +77,11 @@ def serve_services():
 def get_thought():
     thought_id = flask.request.args.get("id", type=int)
     with database.Database() as db:
-        category_name, title, dt, parsed = parser.get_thought_from_id(db, thought_id)
+        try:
+            category_name, title, dt, parsed = parser.get_thought_from_id(db, thought_id)
+        except TypeError:
+            flask.abort(404)
+            return
         return flask.render_template_string(
             parsed,
             **get_template_items(title, db),

@@ -1,5 +1,6 @@
 !README.md
 edaweb.conf
+markdowns/
 *.md
 
 # Byte-compiled / optimized / DLL files

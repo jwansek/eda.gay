@@ -1,7 +1,7 @@
 from dataclasses import dataclass
+import configparser
 import pymysql
 import random
-import app
 
 @dataclass
 class Database:
@@ -10,17 +10,20 @@ class Database:
     passwd:str = None
 
     def __enter__(self):
+        config = configparser.ConfigParser()
+        config.read("edaweb.conf")
+
         if self.safeLogin:
             self.__connection = pymysql.connect(
-                **app.CONFIG["mysql"],
+                **config["mysql"],
                 charset = "utf8mb4"
             )
         else:
             self.__connection = pymysql.connect(
                 user = self.user,
                 passwd = self.passwd,
-                host = app.CONFIG["mysql"]["host"],
-                db = app.CONFIG["mysql"]["db"],
+                host = config["mysql"]["host"],
+                db = config["mysql"]["db"],
                 charset = "utf8mb4"
             )
         return self
@@ -38,10 +41,10 @@ class Database:
             cursor.execute("SELECT alt, url FROM images WHERE imageName = %s;", (imageName, ))
             return cursor.fetchone()
 
-    def get_pfp_image(self):
+    def get_pfp_images(self):
         with self.__connection.cursor() as cursor:
             cursor.execute("SELECT alt, url FROM images WHERE pfp_img = 1;")
-            return random.choice(cursor.fetchall())
+            return cursor.fetchall()
 
     def get_header_articles(self):
         with self.__connection.cursor() as cursor:
@@ -94,8 +97,6 @@ class Database:
             """)
             return cursor.fetchall()
 
-
-
 if __name__ == "__main__":
     with Database() as db:
-        print(db.get_all_thoughts())
+        print(db.get_header_articles())
