@@ -84,6 +84,11 @@ class Database:
             WHERE thought_id = %s;""", (id_, ))
             return cursor.fetchone()
 
+    def update_thought_markdown(self, id_, markdown):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("UPDATE thoughts SET markdown_text = %s WHERE thought_id = %s;", (markdown, id_))
+        self.__connection.commit()
+
     def get_categories_not(self, category_name):
         with self.__connection.cursor() as cursor:
             cursor.execute("SELECT category_name FROM categories WHERE category_name != %s;", (category_name, ))

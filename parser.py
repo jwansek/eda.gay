@@ -1,11 +1,19 @@
-import argparse
 from urllib.parse import urlparse
 import webbrowser
 import database
+import argparse
 import getpass
 import app
+import sys
 import re
 import os
+
+# DISCLAIMER
+# There is almost certainly a python package to
+# do this better. I wanted to do it myself as a challenge.
+
+# TODO:
+#   - Add table formatting
 
 HEADER_INCREMENTER = 1
 IMAGE_TYPES = [".png", ".jpg"]
@@ -28,7 +36,7 @@ def parse_text(unformatted):
     formatted = parse_lists(formatted)
     formatted = add_linebreaks(formatted)
 
-    return '{% extends "template.html" %}\n{% block content %}\n' + formatted + '\n{% endblock %}'
+    return formatted
 
 def parse_headers(test_str):
     regex = r"^#{1,5}\s\w.*$"
@@ -161,65 +169,96 @@ def preview_markdown(path, title, category):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument(
-        "markdown",
-        help = "Path to a markdown file",
-        type = str
+    subparse = p.add_subparsers(help = "sub-command help")
+    save_parser = subparse.add_parser("save", help = "Add a markdown file to the database")
+    preview_parser = subparse.add_parser("preview", help = "Preview a markdown render")
+    echo_parser = subparse.add_parser("echo", help = "Print markdown render to stdout")
+    update_parser = subparse.add_parser("update", help = "Replace a markdown file")
+    export_parser = subparse.add_parser("export", help = "Export a database markdown file to disk")
+
+    for s in [save_parser, preview_parser, echo_parser, update_parser]:
+        s.add_argument(
+            "-m", "--markdown",
+            help = "Path to a markdown file",
+            type = str,
+            required = True
+        )
+    
+    for s in [save_parser, preview_parser]:
+        s.add_argument(
+            "-t", "--title",
+            help = "Article title",
+            type = str,
+            required = True
+        )
+        s.add_argument(
+            "-c", "--category",
+            help = "Article category",
+            type = str,
+            required = True
+        )
+
+    for s in [save_parser, update_parser, export_parser]:
+        s.add_argument(
+            "-u", "--username",
+            help = "Username to use for the database",
+            type = str,
+            required = True
+        )
+
+    for s in [export_parser, update_parser]:
+        s.add_argument(
+            "-i", "--id",
+            help = "Article's id",
+            type = int,
+            required = True
+        )
+
+    export_parser.add_argument(
+        "-o", "--out",
+        help = "Path to write the markdown file to",
+        type = str,
+        required = True
     )
-    p.add_argument(
-        "-u", "--username",
-        help = "Username to use for the database",
-        required = True,
-        type = str
-    )
-    p.add_argument(
-        "-t", "--title",
-        help = "Article title",
-        required = True,
-        type = str
-    )
-    p.add_argument(
-        "-c", "--category",
-        help = "Article category",
-        required = True,
-        type = str
-    )
-    g = p.add_mutually_exclusive_group(required = True)
-    g.add_argument(
-        "-p", "--preview",
-        help = "Preview markdown rendering",
-        action='store_true'
-    )
-    g.add_argument(
-        "-s", "--save",
-        help = "Save markdown to database",
-        action='store_true'
-    )
-    g.add_argument(
-        "-e", "--echo",
-        help = "Print parsed markdown to stdout",
-        action='store_true'
-    )
+
     args = vars(p.parse_args())
 
-    passwd = getpass.getpass("Enter password for %s@%s: " % (args["username"], app.CONFIG["mysql"]["host"]))
+    if "username" in args.keys():
+        args["password"] = getpass.getpass("Enter password for %s@%s: " % (args["username"], app.CONFIG["mysql"]["host"]))
 
-    with database.Database(
-        safeLogin = False,
-        user = args["username"],
-        passwd = passwd
-    ) as db:
+    try:
+        verb = sys.argv[1]
+    except IndexError:
+        print("No verb specified... Nothing to do... Exiting...")
+        exit()
+    
+    if verb in ["save", "export", "update"]:
+        with database.Database(
+            safeLogin = False,
+            user = args["username"],
+            passwd = args["password"]
+        ) as db:
+            if verb == "save":
+                if db.add_category(args["category"]):
+                    print("Added category...")
+                with open(args["markdown"], "r") as f:
+                    db.add_thought(args["category"], args["title"], f.read())
+                print("Added thought...")
 
-        if args["preview"]:
-            preview_markdown(args["markdown"], args["title"], args["category"])
-        elif args["save"]:
-            if db.add_category(args["category"]):
-                print("Added category...")
-            with open(args["markdown"], "r") as f:
-                db.add_thought(args["category"], args["title"], f.read())
-            print("Added thought...")
-        else:
-            print(parse_file(args["markdown"]))
+            elif verb == "export":
+                with open(args["out"], "w") as f:
+                    f.writelines(db.get_thought(args["id"])[-1])
+                print("Written to %s" % args["out"])
+
+            elif verb == "update":
+                with open(args["markdown"], "r") as f:
+                    db.update_thought_markdown(args["id"], f.read())
+
+    if verb == "preview":
+        preview_markdown(args["markdown"], args["title"], args["category"])
+
+    elif verb == "echo":
+        print(parse_file(args["markdown"]))
 
 if __name__ == "__main__":
     main()

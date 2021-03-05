@@ -83,7 +83,7 @@ def get_thought():
             flask.abort(404)
             return
         return flask.render_template_string(
-            parsed,
+            '{% extends "template.html" %}\n{% block content %}\n' + parsed + '\n{% endblock %}',
             **get_template_items(title, db),
             thought = True,
             dt = "published: " + str(dt),
@@ -144,8 +144,6 @@ def preview():
             )
     else:
         flask.abort(404)
-
-    
 
 if __name__ == "__main__":
     app.run(host = "0.0.0.0", debug = True)
