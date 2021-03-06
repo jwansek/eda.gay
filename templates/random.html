@@ -1,0 +1,22 @@
+{% extends "template.html" %}
+{% block content %}
+    <aside id="tags">
+        <h1>current search tags: (click to remove)</h1>
+        <ul>
+            {% for tag in sbi.searchTags %}
+            <li><a href={{"/random?tags=" + "+".join(sbi.remove_tag(tag))}}>{{tag}}</a></li>
+            {% endfor %}
+        </ul>
+        <h1>this image's tags:</h1>
+        <ul>
+            {% for tag in sbi.tags %}
+                <li><a href={{"/random?tags=" + "+".join(sbi.searchTags + [tag])}}>{{tag}}</a></li>
+            {% endfor %}
+        </ul>
+    </aside>
+    <section id="randomImage">
+        <a href={{sbi.source}}><img src={{sbi.imurl}}></a>
+        <h1><a href={{"/random?tags=" + "+".join(sbi.searchTags)}}>generate another</a></h1>
+        <h2><a href={{sbi.source}}>artist link</a></h2>
+    </section>
+{% endblock %}

@@ -1,16 +1,21 @@
 from dataclasses import dataclass
 from io import StringIO
+from lxml import html, etree
 import multiprocessing
 import pihole as ph
 import qbittorrent
 import requests
 import datetime
+import urllib
 import docker
 import clutch
+import random
 import queue
 import json
 import time
 import app
+
+theLastId = 0
 
 def humanbytes(B):
    'Return the given bytes as a human friendly KB, MB, GB, or TB string'
@@ -111,4 +116,104 @@ def get_pihole_stats():
         "domains": pihole.domain_count,
         "last_updated": str(datetime.datetime.fromtimestamp(pihole.gravity_last_updated["absolute"]))
     }
+
+@dataclass
+class SafebooruImage:
+    id_: int
+    url: str
+    searchTags: list
+    tags: list
+    source: str
+    imurl: str
+
+    def remove_tag(self, tag):
+        return list(set(self.searchTags).difference(set([tag])))
+
+def get_num_pages(tags):
+    pages_url = "https://safebooru.org/index.php?page=post&s=list&tags=%s" % "+".join(tags)
+    tree = html.fromstring(requests.get(pages_url).content)
+    try:
+        finalpage_element = tree.xpath("/html/body/div[6]/div/div[2]/div[2]/div/a[12]")[0]
+    except IndexError:
+        return 1
+    else:
+        return int(int(urllib.parse.parse_qs(finalpage_element.get("href"))["pid"][0]) / (5*8))
+
+def get_id_from_url(url):
+    return int(urllib.parse.parse_qs(url)["id"][0])
+
+def get_random_image(tags):
+    global theLastId
+    searchPage = random.randint(1, get_num_pages(tags)) * 5 * 8
+    url = "https://safebooru.org/index.php?page=post&s=list&tags=%s&pid=%i" % ("+".join(tags), searchPage)
+    tree = html.fromstring(requests.get(url).content)
+
+    imageElements = [e for e in tree.xpath("/html/body/div[6]/div/div[2]/div[1]")[0].iter(tag = "a")]
+    try:
+        element = random.choice(imageElements)
+    except IndexError:
+        raise ConnectionError("Couldn't find any images")
+
+    url = "https://safebooru.org/" + element.get("href")
+    if get_id_from_url(url) == theLastId:
+        return get_random_image(tags)
+    theLastId = get_id_from_url(url)
+
+    try:
+        sbi = SafebooruImage(
+            id_ = get_id_from_url(url),
+            url = url,
+            tags = element.find("img").get("alt").split(),
+            searchTags = tags,
+            source = fix_source_url(get_source(url)),
+            imurl = get_imurl(url)
+        )
+    except (ConnectionError, KeyError) as e:
+        print("[ERROR]", e)
+        return get_random_image(tags)
+
+    if link_deleted(sbi.url):
+        print("Retried since the source was deleted...")
+        return get_random_image(tags)
+
+    return sbi
+
+def get_source(url):
+    tree = html.fromstring(requests.get(url).content)
+    for element in tree.xpath('//*[@id="stats"]')[0].iter("li"):
+        if element.text.startswith("Source: h"):
+            return element.text[8:]
+        elif element.text.startswith("Source:"):
+            for child in element.iter():
+                if child.get("href") is not None:
+                    return child.get("href")
+    raise ConnectionError("Couldn't find source image for id %i" % get_id_from_url(url))
+
+def fix_source_url(url):
+    parsed = urllib.parse.urlparse(url)
+    if parsed.netloc == "www.pixiv.net":
+        return "https://www.pixiv.net/en/artworks/" + urllib.parse.parse_qs(parsed.query)["illust_id"][0]
+    elif parsed.netloc in ["bishie.booru.org", "www.secchan.net"]:
+        return ConnectionError("Couldn't get source")
+    elif "pximg.net" in parsed.netloc or "pixiv.net" in parsed.netloc:
+        return "https://www.pixiv.net/en/artworks/" + parsed.path.split("/")[-1][:8]
+    elif parsed.netloc == "twitter.com":
+        return url.replace("twitter.com", "nitter.eda.gay")
+    return url
+
+def get_imurl(url):
+    tree = html.fromstring(requests.get(url).content)
+    return tree.xpath('//*[@id="image"]')[0].get("src")
+
+def link_deleted(url):
+    text = requests.get(url).text
+    return text[text.find("<title>") + 7 : text.find("</title>")] in ["Error | nitter", "イラストコミュニケーションサービス[pixiv]"]
+
+if __name__ == "__main__":
+    sbi = get_random_image(["lio_fotia", "promare"])
+    print(sbi.tags)
+    print(sbi.source)
+    print(sbi.imurl)
+    print(sbi.remove_tag("promare"))
+
  

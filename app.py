@@ -132,6 +132,20 @@ def serve_image(filename):
     else:
         flask.abort(404)
 
+@app.route("/random")
+def serve_random():
+    try:
+        tags = flask.request.args['tags'].split(" ")
+    except KeyError:
+        flask.abort(400)
+    
+    with database.Database() as db:
+        return flask.render_template(
+            "random.html",
+            **get_template_items("random image", db),
+            sbi = services.get_random_image(tags)
+        )
+
 @app.route("/api/<infoRequest>")
 def serve_api_request(infoRequest):
     if infoRequest == "commits":

@@ -77,7 +77,7 @@ def parse_asteriscs(test_str):
     return test_str
 
 def parse_links(test_str):
-    regex = r"(?<!\\)\[.*?\]\(http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+\)"
+    regex = r"(?<!\\)\[.*?\]\(.*?\)"
     matches = re.finditer(regex, test_str, re.MULTILINE)
     offset = 0
 

@@ -96,11 +96,19 @@ article section table td {
     text-align: right;
 }
 
+#randomImage img {
+    max-width: 65%;
+}
+
 aside {
     width: 30%;
     padding-left: 15px;
     margin-left: 15px;
     float: right;
+}
+
+#tags {
+    font-size: xx-small;
 }
 
 .running {
