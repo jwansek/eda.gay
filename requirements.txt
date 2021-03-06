@@ -9,3 +9,7 @@ PiHole-api
 Pillow==8.1.0
 python-qbittorrent==0.4.2
 PyGithub
+lxml
+requests
+PasteScript==3.2.0
+waitress

@@ -45,6 +45,12 @@
                     <ul>
                         <li><b><a href={{'/thoughts#'+category.replace(' ', '_')}}>{{category}}</a></b></li>
                     </ul>
+                    <h5>related thoughts:</h5>
+                    <ul>
+                        {% for id_, title, dt, category in related %}
+                            <li><a href={{"/thought?id=%i" % id_}}>{{title}}</a></li>
+                        {% endfor %}
+                    </ul>
                     <h5>other categories:</h5>
                     {% for category_name in othercategories %}
                         <ul>
@@ -58,7 +64,8 @@
                 {% endblock %}
             </article>
             <footer>
-                <p>Web design is my passion</p>
+                <p>this site is <a href="/thought?id=3">javascript free</a></p>
+                <a href="https://github.com/jwansek/edaweb">sauce code released under gplv3</a>
             </footer>
         </div>
     </body>

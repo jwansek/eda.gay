@@ -91,6 +91,15 @@ class Database:
             WHERE thought_id = %s;""", (id_, ))
             return cursor.fetchone()
 
+    def get_similar_thoughts(self, category, id_):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT thought_id, title, dt, category_name FROM thoughts 
+            INNER JOIN categories ON thoughts.category_id = categories.category_id 
+            WHERE category_name = %s AND thought_id != %s;""", 
+            (category, id_))
+            return cursor.fetchall()
+
     def get_featured_thoughts(self):
         with self.__connection.cursor() as cursor:
             cursor.execute("SELECT thought_id, title FROM thoughts WHERE featured = 1;")
@@ -223,8 +232,5 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
     return sorted(out, key = lambda a: a["datetime"], reverse = True) 
 
 if __name__ == "__main__":
-    import datetime
-    start = datetime.datetime.now()
     with Database() as db:
-        print(db.get_cached_tweets())
-        print("Took: ", (datetime.datetime.now() - start))
+        print(db.get_similar_thoughts("about me", 5))

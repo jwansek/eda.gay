@@ -100,6 +100,10 @@ article section table td {
     max-width: 65%;
 }
 
+article img {
+    max-width: 65%;
+}
+
 aside {
     width: 30%;
     padding-left: 15px;
@@ -132,8 +136,9 @@ body div article {
 }
 
 footer {
-    background-color: gray;
-    padding: 3px;
+    padding: 300px 10px 5px 20px;
+    margin-bottom: 300px;
+    font-size: xx-small;
 }
 
 @media (max-width: 1023px) {

@@ -1,3 +1,5 @@
+from paste.translogger import TransLogger
+from waitress import serve
 from PIL import Image
 import configparser
 import webbrowser
@@ -7,6 +9,7 @@ import services
 import random
 import parser
 import flask
+import sys
 import os
 import io
 
@@ -94,7 +97,8 @@ def get_thought():
             thought = True,
             dt = "published: " + str(dt),
             category = category_name,
-            othercategories = db.get_categories_not(category_name)
+            othercategories = db.get_categories_not(category_name),
+            related = db.get_similar_thoughts(category_name, thought_id)
         )
 
 @app.route("/thoughts")
@@ -161,13 +165,12 @@ def serve_api_request(infoRequest):
     else:
         flask.abort(404)
 
-
 @app.route("/preview")
 def preview():
     if "PREVIEW" in os.environ:
         with database.Database() as db:
             return flask.render_template_string(
-                os.environ["PREVIEW"],
+                 '{% extends "template.html" %}\n{% block content %}\n' + os.environ["PREVIEW"] + '\n{% endblock %}',
                 **get_template_items(os.environ["PREVIEW_TITLE"], db),
                 thought = True,
                 dt = "preview rendered: " + str(datetime.datetime.now()),
@@ -178,4 +181,11 @@ def preview():
         flask.abort(404)
 
 if __name__ == "__main__":
-    app.run(host = "0.0.0.0", debug = True)
+    try:
+        if sys.argv[1] == "--production":
+            #serve(TransLogger(app), host='127.0.0.1', port = 6969)
+            serve(TransLogger(app), host='0.0.0.0', port = 6969)
+        else:
+            app.run(host = "0.0.0.0", port = 5001, debug = True)
+    except IndexError:
+        app.run(host = "0.0.0.0", port = 5001, debug = True)

@@ -5,7 +5,7 @@
             <h4>recent thoughts:</h4>
             <ul>
                 {% for id_, title in featured_thoughts %}
-                    <li><a href={{"/thought?id=%i" % id_}}>title</a></li>
+                    <li><a href={{"/thought?id=%i" % id_}}>{{title}}</a></li>
                 {% endfor %}
             </ul>
         </section>
