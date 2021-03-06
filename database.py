@@ -125,8 +125,9 @@ class Database:
             return list(cursor.fetchall())
 
     def update_twitter_cache(self, requested):
-        urls = [i[1] for i in self.get_cached_tweets(recurse = False)]
         with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT url FROM twitterCache;")
+            urls = [i[0] for i in cursor.fetchall()]
             for url, text in requested:
                 if url not in urls:
                     cursor.execute("INSERT INTO twitterCache (text, url) VALUES (%s, %s);", (text, url))
@@ -151,8 +152,9 @@ class Database:
             } for i in cursor.fetchall()]
 
     def update_commit_cache(self, requested):
-        urls = [i["url"] for i in self.get_cached_commits(recurse = False)]
         with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT DISTINCT url FROM commitCache;")
+            urls = [i[0] for i in cursor.fetchall()]
             for commit in requested:
                 if commit["url"] not in urls:
                     cursor.execute("""
