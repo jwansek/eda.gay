@@ -15,7 +15,7 @@
         <section id="recent_tweets">
             <h1>recent tweets</h1>
             <ul>
-                {% for url, text in tweets %}
+                {% for text, url in tweets %}
                     {% if text == None %}
                         <li><a href={{url}}>[image only]</a></li>
                     {% else %}
@@ -25,4 +25,12 @@
             </ul>
         </section>
     {% endif %}
+    <section id="recent commits">
+        <h1>recent git commits:</h4>
+        <ul>
+            {% for commit in commits %}
+                <li><a href={{commit["url"]}}>{{"[%s] %s {+%i;-%i}" % (commit["repo"], commit["message"], commit["stats"]["additions"], commit["stats"]["deletions"])}}</a></li>
+            {% endfor %}
+        </ul>
+    </section>
 {% endblock %}

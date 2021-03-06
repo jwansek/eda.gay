@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from io import StringIO
-from lxml import html
 import multiprocessing
 import pihole as ph
 import qbittorrent
@@ -112,30 +111,4 @@ def get_pihole_stats():
         "domains": pihole.domain_count,
         "last_updated": str(datetime.datetime.fromtimestamp(pihole.gravity_last_updated["absolute"]))
     }
-
-# @timeout
-def get_recent_tweets(numToGet):
-    tweets = []
-    domain = "http://" + app.CONFIG.get("nitter", "domain")
-    with app.database.Database() as db:
-        for title, url in db.get_header_links():
-            if title == "twitter":
-                break
-    tree = html.fromstring(requests.get(url).content)
-    for i, tweetUrlElement in enumerate(tree.xpath('//*[@class="tweet-link"]'), 0):
-        if i > 0:
-            tweets.append((
-                domain + tweetUrlElement.get("href"),
-                tweetUrlElement.getparent().find_class("tweet-content media-body")[0].text
-            ))
-        if len(tweets) >= numToGet:
-            break
-    return tweets + [(url, "view all tweets...")]
-            
-
-
-if __name__ == "__main__":
-    for tweet in get_recent_tweets():
-        print(tweet.get_url())
-        print(tweet.get_text())
-        print()
+ 

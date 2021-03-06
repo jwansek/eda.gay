@@ -54,7 +54,8 @@ def index():
                 **get_template_items("eden's site :3", db),
                 markdown = parser.parse_text(f.read()),
                 featured_thoughts = db.get_featured_thoughts(),
-                tweets = services.get_recent_tweets(6)
+                tweets = db.get_cached_tweets(7) + [("view all tweets...", db.get_my_twitter())],
+                commits = db.get_cached_commits(since = datetime.datetime.now() - datetime.timedelta(days = 7))
             )
 
 @app.route("/discord")
@@ -128,6 +129,21 @@ def serve_image(filename):
         io_ = io.BytesIO()
         img.save(io_, format='JPEG')
         return flask.Response(io_.getvalue(), mimetype='image/jpeg')
+    else:
+        flask.abort(404)
+
+@app.route("/api/<infoRequest>")
+def serve_api_request(infoRequest):
+    if infoRequest == "commits":
+        try:
+            return flask.jsonify(services.request_recent_commits(since = datetime.datetime.fromtimestamp(int(flask.request.args['since']))))
+        except (ValueError, KeyError):
+            flask.abort(400)
+    elif infoRequest == "tweets":
+        try:
+            return flask.jsonify(services.request_recent_tweets(int(flask.request.args['toGet'])))
+        except (ValueError, KeyError):
+            flask.abort(400)
     else:
         flask.abort(404)
 
