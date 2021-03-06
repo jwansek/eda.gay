@@ -14,6 +14,7 @@ import queue
 import json
 import time
 import app
+import os
 
 theLastId = 0
 
@@ -128,6 +129,22 @@ class SafebooruImage:
 
     def remove_tag(self, tag):
         return list(set(self.searchTags).difference(set([tag])))
+
+@dataclass
+class DownloadedImage:
+    imurl: str
+    
+    def __enter__(self):
+        self.filename = os.path.join("static", "images", "random.jpg")
+
+        req = urllib.request.Request(self.imurl, headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_5_8) AppleWebKit/534.50.2 (KHTML, like Gecko) Version/5.0.6 Safari/533.22.3'})
+        mediaContent = urllib.request.urlopen(req).read()
+        with open(self.filename, "wb") as f:
+            f.write(mediaContent)
+        return self.filename
+
+    def __exit__(self, type, value, traceback):
+        os.remove(self.filename)
 
 def get_num_pages(tags):
     pages_url = "https://safebooru.org/index.php?page=post&s=list&tags=%s" % "+".join(tags)

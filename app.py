@@ -6,6 +6,7 @@ import webbrowser
 import datetime
 import database
 import services
+import urllib
 import random
 import parser
 import flask
@@ -143,11 +144,18 @@ def serve_random():
     except KeyError:
         flask.abort(400)
     
+    sbi = services.get_random_image(tags)
+    req = urllib.request.Request(sbi.imurl)
+    mediaContent = urllib.request.urlopen(req).read()
+    with open(os.path.join("static", "images", "random.jpg"), "wb") as f:
+        f.write(mediaContent)
+
     with database.Database() as db:
         return flask.render_template(
             "random.html",
             **get_template_items("random image", db),
-            sbi = services.get_random_image(tags)
+            sbi = sbi,
+            localimg = "/img/random.jpg?seed=%i" % random.randint(0, 9999)
         )
 
 @app.route("/api/<infoRequest>")
