@@ -1,31 +1,28 @@
 {% extends "template.html" %}
 {% block content %}
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
-   <p>Haiiiiiiii, this is the index page uwu</p>
- {% endblock %}
+    <aside>
+        <section id="recent thoughts">
+            <h4>recent thoughts:</h4>
+            <ul>
+                {% for id_, title in featured_thoughts %}
+                    <li><a href={{"/thought?id=%i" % id_}}>title</a></li>
+                {% endfor %}
+            </ul>
+        </section>
+    </aside>
+    {{markdown|safe}}
+    {% if tweets != None %}
+        <section id="recent_tweets">
+            <h1>recent tweets</h1>
+            <ul>
+                {% for url, text in tweets %}
+                    {% if text == None %}
+                        <li><a href={{url}}>[image only]</a></li>
+                    {% else %}
+                        <li><a href={{url}}>{{text}}</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </section>
+    {% endif %}
+{% endblock %}

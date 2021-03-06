@@ -47,10 +47,15 @@ def get_template_items(title, db):
 @app.route("/")
 def index():
     with database.Database() as db:
-        return flask.render_template(
-            "index.html", 
-            **get_template_items("eda.gay", db)
-        )
+        recentTweets = []
+        with open(os.path.join("static", "index.md"), "r") as f:
+            return flask.render_template(
+                "index.html", 
+                **get_template_items("eden's site :3", db),
+                markdown = parser.parse_text(f.read()),
+                featured_thoughts = db.get_featured_thoughts(),
+                tweets = services.get_recent_tweets(6)
+            )
 
 @app.route("/discord")
 def discord():
@@ -123,9 +128,6 @@ def serve_image(filename):
         io_ = io.BytesIO()
         img.save(io_, format='JPEG')
         return flask.Response(io_.getvalue(), mimetype='image/jpeg')
-
-
-
     else:
         flask.abort(404)
 

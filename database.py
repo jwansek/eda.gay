@@ -84,6 +84,11 @@ class Database:
             WHERE thought_id = %s;""", (id_, ))
             return cursor.fetchone()
 
+    def get_featured_thoughts(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT thought_id, title FROM thoughts WHERE featured = 1;")
+            return cursor.fetchall()
+
     def update_thought_markdown(self, id_, markdown):
         with self.__connection.cursor() as cursor:
             cursor.execute("UPDATE thoughts SET markdown_text = %s WHERE thought_id = %s;", (markdown, id_))
