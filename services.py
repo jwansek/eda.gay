@@ -169,7 +169,8 @@ def get_random_image(tags):
     try:
         element = random.choice(imageElements)
     except IndexError:
-        raise ConnectionError("Couldn't find any images")
+        # raise ConnectionError("Couldn't find any images")
+        return get_random_image(tags)
 
     url = "https://safebooru.org/" + element.get("href")
     if get_id_from_url(url) == theLastId:
