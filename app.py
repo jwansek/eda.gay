@@ -62,6 +62,10 @@ def index():
                 commits = db.get_cached_commits(since = datetime.datetime.now() - datetime.timedelta(days = 7))
             )
 
+@app.route("/robots.txt")
+def robots():
+    return flask.send_from_directory("static", "robots.txt")
+
 @app.route("/discord")
 def discord():
     with database.Database() as db:
