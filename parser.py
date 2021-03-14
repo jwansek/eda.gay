@@ -16,6 +16,8 @@ import os
 
 # TODO:
 #   - Add table formatting
+#   - Fix <br>s with newlines
+#   - Fix nested markdown elements
 
 HEADER_INCREMENTER = 1
 IMAGE_TYPES = [".png", ".jpg"]
