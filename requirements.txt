@@ -13,3 +13,6 @@ lxml
 requests
 PasteScript==3.2.0
 waitress
+houdini.py
+Pygments
+misaka

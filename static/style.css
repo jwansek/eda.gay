@@ -115,6 +115,14 @@ aside {
     font-size: xx-small;
 }
 
+blockquote span {
+    color: #789922;
+}
+
+blockquote span::before {
+    content: ">";
+}
+
 .running {
     background-color: green;
     padding: 1, 1, 1, 1;
