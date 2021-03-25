@@ -39,22 +39,19 @@ header nav {
     display: inline;
 }
 
-#links {
-    text-align: center;
-    font-size: x-small;
-}
-
-header span nav ul {
+#externallinks {
     background-color: black;
+    text-align: center;
 }
 
-header span nav ul li a {
-    color: white;
+#externallinks nav ul li a {
+    color: #f1f3f3;
+    font-size: smaller;
 }
 
 header div {
     padding-left: 20px;
-    padding-bottom: 10px;
+    /* padding-bottom: 10px; */
 }
 
 nav ul {
@@ -100,7 +97,7 @@ article section table td {
     max-width: 65%;
 }
 
-article img {
+#content img {
     max-width: 65%;
 }
 
@@ -125,22 +122,19 @@ blockquote span::before {
 
 .running {
     background-color: green;
-    padding: 1, 1, 1, 1;
-    margin: 0, 0, 2, 3;
 }
 
 .notRunning {
     background-color: red;
-    padding: 1, 1, 1, 1;
-    margin: 0, 0, 2, 3;
 }
 
 header img {
     max-height: 110px;
 }
 
-body div article {
-    padding-left: 6px;
+body div div {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 footer {

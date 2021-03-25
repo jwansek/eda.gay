@@ -1,11 +1,11 @@
 {% extends "template.html" %}
 {% block content %}
     <aside>
-        <section id="recent thoughts">
+        <section id="recent_thoughts">
             <h4>recent thoughts:</h4>
             <ul>
                 {% for id_, title in featured_thoughts %}
-                    <li><a href={{"/thought?id=%i" % id_}}>{{title}}</a></li>
+                    <li><a href="{{'/thought?id=%i' % id_}}">{{title}}</a></li>
                 {% endfor %}
             </ul>
         </section>
@@ -13,23 +13,23 @@
     {{markdown|safe}}
     {% if tweets != None %}
         <section id="recent_tweets">
-            <h1>recent tweets</h1>
+            <h3>recent tweets</h3>
             <ul>
                 {% for text, url in tweets %}
                     {% if text == None %}
-                        <li><a href={{url}}>[image only]</a></li>
+                        <li><a href="{{url}}">[image only]</a></li>
                     {% else %}
-                        <li><a href={{url}}>{{text}}</a></li>
+                        <li><a href="{{url}}">{{text}}</a></li>
                     {% endif %}
                 {% endfor %}
             </ul>
         </section>
     {% endif %}
-    <section id="recent commits">
-        <h1>recent git commits:</h4>
+    <section id="recent_commits">
+        <h3>recent git commits:</h3>
         <ul>
             {% for commit in commits %}
-                <li><a href={{commit["url"]}}>{{"[%s] %s {+%i;-%i}" % (commit["repo"], commit["message"], commit["stats"]["additions"], commit["stats"]["deletions"])}}</a></li>
+                <li><a href="{{commit['url']}}">{{"[%s] %s {+%i;-%i}" % (commit["repo"], commit["message"], commit["stats"]["additions"], commit["stats"]["deletions"])}}</a></li>
             {% endfor %}
         </ul>
     </section>
