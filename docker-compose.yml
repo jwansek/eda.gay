@@ -1,0 +1,11 @@
+version: '3'
+services:
+  edaweb:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      -  /home/eden/Documents/edaweb/static/:/app/static/
+    ports:
+      - "127.0.0.1:6969:6969"
+
