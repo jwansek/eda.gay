@@ -8,3 +8,4 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 - [nextcloud - dropbox (+ much more!) alternative](https://nc.eda.gay)
 - [invidious - youtube alternative](https://invidious.eda.gay)
 - [nitter - alternative twitter frontend](https://nitter.eda.gay)
+- [gitea - github alternative](https://git.eda.gay/)
