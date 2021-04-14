@@ -9,3 +9,4 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 - [invidious - youtube alternative](https://invidious.eda.gay)
 - [nitter - alternative twitter frontend](https://nitter.eda.gay)
 - [gitea - github alternative](https://git.eda.gay/)
+- [bibliogram - less annoying instagram front end](https://bibliogram.eda.gay/applysettings/c8009ec7533d542a90bb1d41563435c1)

@@ -162,20 +162,6 @@ def serve_random():
             localimg = "/img/random.jpg?seed=%i" % random.randint(0, 9999)
         )
 
-@app.route("/api/<infoRequest>")
-def serve_api_request(infoRequest):
-    if infoRequest == "commits":
-        try:
-            return flask.jsonify(services.request_recent_commits(since = datetime.datetime.fromtimestamp(int(flask.request.args['since']))))
-        except (ValueError, KeyError):
-            flask.abort(400)
-    elif infoRequest == "tweets":
-        try:
-            return flask.jsonify(services.request_recent_tweets(int(flask.request.args['toGet'])))
-        except (ValueError, KeyError):
-            flask.abort(400)
-    else:
-        flask.abort(404)
 
 @app.route("/preview")
 def preview():
