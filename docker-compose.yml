@@ -4,6 +4,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: jwansek/edaweb
     volumes:
       -  /home/eden/Documents/edaweb/static/:/app/static/
     ports:
