@@ -1,12 +1,12 @@
 {% extends "template.html" %}
 {% block content %}
     {% for category_name, thoughts in tree.items() %}
-    <h2 id={{category_name.replace(' ', '_')}}>{{category_name}}</h2>
-    <dl>
-        {% for id_, title, dt in thoughts %}
-        <dt><a href={{'/thought?id=%i' % id_}}>{{title}}</a></dt>
-        <dd>{{dt}}</dd>
-        {% endfor %}
-    </dl>
+        <h3 id="{{category_name.replace(' ', '_')}}">{{category_name}}</h3>
+        <dl>
+            {% for id_, title, dt in thoughts %}
+                <dt><a href="{{'/thought?id=%i' % id_}}">{{title}}</a></dt>
+                <dd>{{dt}}</dd>
+            {% endfor %}
+        </dl>
     {% endfor %}
 {% endblock %}

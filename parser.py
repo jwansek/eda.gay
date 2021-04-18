@@ -33,8 +33,12 @@ class HighlighterRenderer(misaka.SaferHtmlRenderer):
         out = '\n<blockquote>'
         for line in houdini.escape_html(content.strip()).split("\n"):
             out += '\n<span class="quote">{}</span><br>'.format(line)
-        print(out)
         return out + '\n</blockquote>'
+
+    def image(self, link, title, alt):
+        return "<a href='%s' target='_blank'><img alt='%s' src='%s'></a>" % (
+            urlparse(link)._replace(query='').geturl(), alt, link
+        )
 
 def get_thought_from_id(db, id_):
     category_name, title, dt, markdown = db.get_thought(id_)
