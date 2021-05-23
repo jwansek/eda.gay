@@ -8,5 +8,5 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 - [nextcloud - dropbox (+ much more!) alternative](https://nc.eda.gay)
 - [invidious - youtube alternative](https://invidious.eda.gay)
 - [nitter - alternative twitter frontend](https://nitter.eda.gay)
-- [gitea - github alternative](https://git.eda.gay/)
+- [gitea - github alternative](https://git.eda.gay/) (currently down while i migrate to gitlab docker)
 - [bibliogram - less annoying instagram front end](https://bibliogram.eda.gay/applysettings/c8009ec7533d542a90bb1d41563435c1)

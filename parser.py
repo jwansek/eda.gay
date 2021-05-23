@@ -80,6 +80,7 @@ def main():
     echo_parser = subparse.add_parser("echo", help = "Print markdown render to stdout")
     update_parser = subparse.add_parser("update", help = "Replace a markdown file")
     export_parser = subparse.add_parser("export", help = "Export a database markdown file to disk")
+    list_parser = subparse.add_parser("list", help = "List all the markdowns in the database")
 
     for s in [save_parser, preview_parser, echo_parser, update_parser]:
         s.add_argument(
@@ -103,7 +104,7 @@ def main():
             required = True
         )
 
-    for s in [save_parser, update_parser, export_parser]:
+    for s in [save_parser, update_parser, export_parser, list_parser]:
         s.add_argument(
             "-u", "--username",
             help = "Username to use for the database",
@@ -137,7 +138,7 @@ def main():
         print("No verb specified... Nothing to do... Exiting...")
         exit()
     
-    if verb in ["save", "export", "update"]:
+    if verb in ["save", "export", "update", "list"]:
         with database.Database(
             safeLogin = False,
             user = args["username"],
@@ -158,6 +159,10 @@ def main():
             elif verb == "update":
                 with open(args["markdown"], "r") as f:
                     db.update_thought_markdown(args["id"], f.read())
+
+            elif verb == "list":
+                for id_, title, dt, category_name in db.get_all_thoughts():
+                    print("%d\t%s\t%s\t%s" % (id_, title, dt, category_name))
 
     if verb == "preview":
         preview_markdown(args["markdown"], args["title"], args["category"])
