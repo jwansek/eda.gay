@@ -1,7 +1,7 @@
 edaweb.conf
 markdowns/
 static/images/random.jpg
-zips/*.zip
+static/zips/*.zip
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
