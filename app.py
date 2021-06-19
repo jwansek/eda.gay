@@ -3,6 +3,7 @@ from waitress import serve
 from PIL import Image
 import configparser
 import webbrowser
+import downloader
 import datetime
 import database
 import services
@@ -51,7 +52,6 @@ def get_template_items(title, db):
 @app.route("/")
 def index():
     with database.Database() as db:
-        recentTweets = []
         with open(os.path.join("static", "index.md"), "r") as f:
             return flask.render_template(
                 "index.html", 
@@ -144,14 +144,29 @@ def serve_image(filename):
 @app.route("/nhdl")
 def serve_nhdl():
     with database.Database() as db:
-        return flask.render_template(
-            "nhdl.html",
-            **get_template_items("Hentai Downloader", db)
-        )
+        try:
+            nhentai_id = int(flask.request.args["id"])
+            with downloader.CompressedImages(nhentai_id) as zippath:
+                # return app.send_static_file(os.path.split(zippath)[-1])
+                return flask.redirect("/zip/%s" % os.path.split(zippath)[-1])
+
+        except (KeyError, ValueError):
+            return flask.render_template(
+                "nhdl.html",
+                **get_template_items("Hentai Downloader", db)
+            )
+
+@app.route("/zip/<zipfile>")
+def serve_zip(zipfile):
+    return flask.send_from_directory(os.path.join(".", "static", "zips"), zipfile)
 
 @app.route("/nhdlredirect", methods = ["POST"])
 def redirect_nhdl():
-    if flask.request.form["domain"] == "nhentai":
+    req = dict(flask.request.form)
+    try:
+        return flask.redirect("/nhdl?id=%i" % int(req["number_input"]))
+    except (TypeError, ValueError, KeyError):
+        flask.abort(400)
         
 
 @app.route("/random")
@@ -195,7 +210,7 @@ if __name__ == "__main__":
     try:
         if sys.argv[1] == "--production":
             #serve(TransLogger(app), host='127.0.0.1', port = 6969)
-            serve(TransLogger(app), host='0.0.0.0', port = 6969, threads = 8)
+            serve(TransLogger(app), host='0.0.0.0', port = 6969, threads = 16)
         else:
             app.run(host = "0.0.0.0", port = 5001, debug = True)
     except IndexError:
