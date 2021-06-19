@@ -141,6 +141,19 @@ def serve_image(filename):
     else:
         flask.abort(404)
 
+@app.route("/nhdl")
+def serve_nhdl():
+    with database.Database() as db:
+        return flask.render_template(
+            "nhdl.html",
+            **get_template_items("Hentai Downloader", db)
+        )
+
+@app.route("/nhdlredirect", methods = ["POST"])
+def redirect_nhdl():
+    if flask.request.form["domain"] == "nhentai":
+        
+
 @app.route("/random")
 def serve_random():
     try:

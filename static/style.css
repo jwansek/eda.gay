@@ -132,6 +132,15 @@ header img {
     max-height: 110px;
 }
 
+form #number_input {
+    width: 50px;
+    margin-left: 10px;
+}
+
+form #url_input {
+    margin-left: 10px;
+}
+
 body div div {
     padding-left: 10px;
     padding-right: 10px;

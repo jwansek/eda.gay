@@ -1,0 +1,12 @@
+{% extends "template.html" %}
+{% block content %}
+    <form action="/nhdlredirect" method="POST">
+        <input type="radio" name="domain" value="nhentai" id="nhentai">
+        <label for="nhentai">nHentai.net number:</label>
+        <input type="text" id="number_input" name="number_input"><br>
+        <input type="radio" name="domain" value="other" id="other">
+        <label for="other">Use full URL:</label>
+        <input type="text" id="url_input" name="url_input"><br><br>
+        <input type="submit" value="Download">
+    </form>
+{% endblock %}
