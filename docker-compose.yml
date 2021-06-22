@@ -6,7 +6,8 @@ services:
       dockerfile: Dockerfile
     image: jwansek/edaweb
     volumes:
-      -  ./static/:/app/static/
+      - ./static/:/app/static/
+      - ./edaweb.conf:/app/edaweb.conf
     ports:
       - "6969:6969"
 
