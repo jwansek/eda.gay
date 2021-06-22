@@ -210,7 +210,7 @@ if __name__ == "__main__":
     try:
         if sys.argv[1] == "--production":
             #serve(TransLogger(app), host='127.0.0.1', port = 6969)
-            serve(TransLogger(app), host='0.0.0.0', port = 6969, threads = 16)
+            serve(TransLogger(app), host='0.0.0.0', port = 6969, threads = 32)
         else:
             app.run(host = "0.0.0.0", port = 5001, debug = True)
     except IndexError:
