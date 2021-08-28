@@ -37,9 +37,9 @@ def get_correct_article_headers(db:database.Database, title):
         for i in db_headers:
             if i[0] != title:
                 out.append(i)
-        return out + [("index", "/")]
+        return out + [("index", "/~")]
     else:
-        return db_headers + [("index", "/")]
+        return db_headers + [("index", "/~")]
 
 def get_template_items(title, db):
     return {
@@ -50,6 +50,7 @@ def get_template_items(title, db):
     }
 
 @app.route("/")
+@app.route("/~")
 def index():
     with database.Database() as db:
         with open(os.path.join("static", "index.md"), "r") as f:
