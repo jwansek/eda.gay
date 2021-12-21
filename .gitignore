@@ -3,6 +3,7 @@ markdowns/
 static/images/random.jpg
 static/zips/*.zip
 .nfs*
+static/images/Thumbs.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
