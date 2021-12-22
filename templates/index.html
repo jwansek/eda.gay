@@ -29,7 +29,8 @@
         <h3>recent git commits:</h3>
         <ul>
             {% for commit in commits %}
-                <li><a href="{{commit['url']}}">{{"[%s] %s {+%i;-%i}" % (commit["repo"], commit["message"], commit["stats"]["additions"], commit["stats"]["deletions"])}}</a></li>
+                <!-- <li><a href="{{commit['url']}}">{{"[%s] %s {+%i;-%i}" % (commit["repo"], commit["message"], commit["stats"]["additions"], commit["stats"]["deletions"])}}</a></li> -->
+                <li>[<a href="{{https://git.eda.gay + commit['repo']}}">{{commit["repo"]}}</a>] {+{{commit["stats"]["additions"]}}; -{{commit["stats"]["deletions"])}}} <a href="{{commit['url'].replace('github.com', 'git.eda.gay') + '.html'}}">{{commit["message"]}}</a> - <a href="{{commit['url']}}">Backup link</a></li>
             {% endfor %}
         </ul>
     </section>
