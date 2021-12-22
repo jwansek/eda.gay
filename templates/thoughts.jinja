@@ -1,4 +1,4 @@
-{% extends "template.html" %}
+{% extends "template.jinja" %}
 {% block content %}
     {% for category_name, thoughts in tree.items() %}
         <h3 id="{{category_name.replace(' ', '_')}}">{{category_name}}</h3>

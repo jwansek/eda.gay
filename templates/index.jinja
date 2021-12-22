@@ -1,4 +1,4 @@
-{% extends "template.html" %}
+{% extends "template.jinja" %}
 {% block content %}
     <aside>
         <section id="recent_thoughts">
@@ -29,8 +29,7 @@
         <h3>recent git commits:</h3>
         <ul>
             {% for commit in commits %}
-                <li><a href="{{commit['url']}}">{{"[%s] %s {+%i;-%i}" % (commit["repo"], commit["message"], commit["stats"]["additions"], commit["stats"]["deletions"])}}</a></li>
-                <!-- <li>[<a href="{{https://git.eda.gay + commit['repo']}}">{{commit["repo"]}}</a>] {+{{commit["stats"]["additions"]}}; -{{commit["stats"]["deletions"])}}} <a href="{{commit['url'].replace('github.com', 'git.eda.gay') + '.html'}}">{{commit["message"]}}</a> - <a href="{{commit['url']}}">Backup link</a></li> -->
+                <li>[<a href="{{'https://git.eda.gay/' + commit['repo'] + '/about.html'}}">{{commit["repo"]}}</a>] {+{{commit["stats"]["additions"]}}; -{{commit["stats"]["deletions"]}}} <a href="{{commit['url'].replace('github.com/jwansek', 'git.eda.gay') + '.html'}}">{{commit["message"]}}</a> - <a href="{{commit['url']}}">backup link</a></li>
             {% endfor %}
         </ul>
     </section>
