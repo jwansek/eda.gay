@@ -55,7 +55,7 @@ def index():
     with database.Database() as db:
         with open(os.path.join("static", "index.md"), "r") as f:
             return flask.render_template(
-                "index.html", 
+                "index.jinja", 
                 **get_template_items("eden's site :3", db),
                 markdown = parser.parse_text(f.read()),
                 featured_thoughts = db.get_featured_thoughts(),
@@ -71,7 +71,7 @@ def robots():
 def discord():
     with database.Database() as db:
         return flask.render_template(
-            "discord.html", 
+            "discord.jinja", 
             **get_template_items("discord", db),
             discord = CONFIG["discord"]["username"]
         )
@@ -80,7 +80,7 @@ def discord():
 def serve_services():
     with database.Database() as db:
         return flask.render_template(
-            "services.html",
+            "services.jinja",
             **get_template_items("services", db),
             docker = services.get_docker_stats(),
             qbit = services.get_qbit_stats(),
@@ -98,7 +98,7 @@ def get_thought():
             flask.abort(404)
             return
         return flask.render_template_string(
-            '{% extends "template.html" %}\n{% block content %}\n' + parsed + '\n{% endblock %}',
+            '{% extends "template.jinja" %}\n{% block content %}\n' + parsed + '\n{% endblock %}',
             **get_template_items(title, db),
             thought = True,
             dt = "published: " + str(dt),
@@ -119,7 +119,7 @@ def get_thoughts():
                 tree[category].append((id_, title, str(dt)))
 
         return flask.render_template(
-            "thoughts.html",
+            "thoughts.jinja",
             **get_template_items("thoughts", db),
             tree = tree
         )
@@ -153,7 +153,7 @@ def serve_nhdl():
 
         except (KeyError, ValueError):
             return flask.render_template(
-                "nhdl.html",
+                "nhdl.jinja",
                 **get_template_items("Hentai Downloader", db)
             )
 
@@ -185,7 +185,7 @@ def serve_random():
 
     with database.Database() as db:
         return flask.render_template(
-            "random.html",
+            "random.jinja",
             **get_template_items("random image", db),
             sbi = sbi,
             localimg = "/img/random.jpg?seed=%i" % random.randint(0, 9999)
@@ -197,7 +197,7 @@ def preview():
     if "PREVIEW" in os.environ:
         with database.Database() as db:
             return flask.render_template_string(
-                 '{% extends "template.html" %}\n{% block content %}\n' + os.environ["PREVIEW"] + '\n{% endblock %}',
+                 '{% extends "template.jinja" %}\n{% block content %}\n' + os.environ["PREVIEW"] + '\n{% endblock %}',
                 **get_template_items(os.environ["PREVIEW_TITLE"], db),
                 thought = True,
                 dt = "preview rendered: " + str(datetime.datetime.now()),
