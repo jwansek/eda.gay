@@ -1,0 +1,16 @@
+{% extends "template.jinja" %}
+{% block content %}
+    <p>Your order has been placed. Expect a confirmation email to {{ email }} when I can be bothered to sort it out.</p>
+    <br>
+    <p>Your order/reference id is {{ id_ }}</p>
+    <br>
+    <p>The details were as follows:</p>
+    <table>
+    {% for k, v in req.items() %}
+        <tr>
+            <td>{{ k.upper() }}</td>
+            <td>{{ v }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}

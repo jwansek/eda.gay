@@ -183,6 +183,21 @@ class Database:
             cursor.execute("SELECT link FROM headerLinks WHERE name = 'twitter';")
             return cursor.fetchone()[0]
 
+    def get_iso_cd_options(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT name FROM isocds;")
+            return [i[0] for i in cursor.fetchall()]
+
+    def append_cd_orders(self, iso, email, house, street, city, county, postcode, name):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("""
+            INSERT INTO cd_orders (cd_id, email, house, street, city, county, postcode, name)
+            VALUES ((SELECT cd_id FROM isocds WHERE name = %s), %s, %s, %s, %s, %s, %s, %s);
+            """, (iso, email, house, street, city, county, postcode, name))
+            id_ = cursor.lastrowid
+        self.__connection.commit()
+        return id_
+
 def update_cache():
     # print("updating cache...")
     with Database() as db:
@@ -233,4 +248,5 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
 
 if __name__ == "__main__":
     with Database() as db:
-        print(db.get_similar_thoughts("about me", 5))
+        # print(db.get_similar_thoughts("about me", 5))
+        print(db.get_iso_cd_options())

@@ -4,6 +4,8 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 
 [click here for a random image of lio fotia](https://eda.gay/random?tags=lio_fotia)
 
+[click here for a linux ISO CD to be posted to you for free](https://eda.gay/isocd)
+
 ## FOSS alternative services
 - [nextcloud - dropbox (+ much more!) alternative](https://nc.eda.gay)
 - [invidious - youtube alternative](https://invidious.eda.gay)

@@ -1,0 +1,29 @@
+{% extends "template.jinja" %}
+{% block content %}
+    <p>As discussed <a href="https://nitter.eda.gay/estrogenizedboy/status/1490322471215636480#m">here</a>, I will post a GNU/Linux install CD to you for free (provided you live in the United Kingdom). Just fill out the form below:</p>
+    <form action="/getisocd" method="POST">
+        <label for="email">*Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+        <label for="iso">*ISO:</label>
+        <select name="iso" id="iso" required>
+        {% for iso in iso_options %}
+            <option value="{{ iso }}">{{ iso }}</option>
+        {% endfor %}
+        </select><br><br>
+        <label for="name">*Name:</label>
+        <input id="name" name="name" required><br><br>
+        <label for="house">*House Number/Name:</label>
+        <input id="house" name="house" required><br><br>
+        <label for="street">*Street:</label>
+        <input id="street" name="street" required><br><br>
+        <label for="city">City:</label>
+        <input id="city" name="city"><br><br>
+        <label for="county">County:</label>
+        <input id="county" name="county"><br><br>
+        <label for="postcode">*Postcode:</label>
+        <input id="postcode" name="postcode" required><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <p>I make no promises how long this will actually take, but you might get a special present too uwu</p>
+    <p>btw if u abuse this service i'll just ignore u</p>
+{% endblock %}

@@ -157,6 +157,15 @@ def serve_nhdl():
                 **get_template_items("Hentai Downloader", db)
             )
 
+@app.route("/isocd")
+def serve_iso_form():
+    with database.Database() as db:
+        return flask.render_template(
+            "isocd.jinja",
+            **get_template_items("Get a GNU/Linux install CD", db),
+            iso_options = db.get_iso_cd_options()
+        )
+
 @app.route("/zip/<zipfile>")
 def serve_zip(zipfile):
     return flask.send_from_directory(os.path.join(".", "static", "zips"), zipfile)
@@ -169,6 +178,20 @@ def redirect_nhdl():
     except (TypeError, ValueError, KeyError):
         flask.abort(400)
         
+@app.route("/getisocd", methods = ["POST"])
+def get_iso_cd():
+    req = dict(flask.request.form)
+    print(req)
+    with database.Database() as db:
+        id_ = db.append_cd_orders(**req)
+        print(id_)
+        return flask.render_template(
+            "isocd_confirmation.jinja",
+            **get_template_items("Get a GNU/Linux install CD", db),
+            email = req["email"],
+            req = req,
+            id_ = id_
+        )
 
 @app.route("/random")
 def serve_random():
