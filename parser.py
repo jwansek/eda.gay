@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from pygments import highlight
 from pygments.formatters import HtmlFormatter, ClassNotFound
 from pygments.lexers import get_lexer_by_name
+import urllib.parse
 import webbrowser
 import database
 import argparse
@@ -40,6 +41,15 @@ class HighlighterRenderer(misaka.SaferHtmlRenderer):
             urlparse(link)._replace(query='').geturl(), alt, link
         )
 
+    def header(self, content, level):
+        # if level > 1:
+        hash_ = urllib.parse.quote_plus(content)
+        return "<h%d id='%s'>%s <a class='header_linker' href='#%s'>[#]</a></h%d>" % (
+            level, hash_, content, hash_, level
+        )
+        # else:
+        #     return "<h1>%s</h1>" % content
+
 def get_thought_from_id(db, id_):
     category_name, title, dt, markdown = db.get_thought(id_)
     return category_name, title, dt, parse_text(markdown)
@@ -58,7 +68,8 @@ def parse_text(unformatted):
 
 def preview_markdown(path, title, category):
     def startBrowser():
-        webbrowser.get("firefox").open("http://localhost:5000/preview")
+        # webbrowser.get("firefox").open("http://localhost:5000/preview")
+        webbrowser.open("http://localhost:5000/preview")
         del os.environ["PREVIEW"]
         del os.environ["PREVIEW_TITLE"]
         del os.environ["CATEGORY"]

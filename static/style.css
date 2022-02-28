@@ -112,6 +112,10 @@ aside {
     font-size: xx-small;
 }
 
+.header_linker {
+    font-size: x-small;
+}
+
 blockquote span {
     color: #789922;
 }
@@ -143,7 +147,7 @@ form #url_input {
 
 body div div {
     padding-left: 10px;
-    /* padding-right: 10px; */
+    padding-right: 10px;
 }
 
 footer {
