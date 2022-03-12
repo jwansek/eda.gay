@@ -98,12 +98,12 @@ def get_thought():
         except TypeError:
             flask.abort(404)
             return
-        return flask.render_template_string(
-            '{% extends "template.jinja" %}\n{% block content %}\n' + parsed + '\n{% endblock %}',
+        return flask.render_template(
+            "thought.jinja",
             **get_template_items(title, db),
-            thought = True,
+            md_html = parsed,
+            contents_html = headers,
             dt = "published: " + str(dt),
-            headers = headers,
             category = category_name,
             othercategories = db.get_categories_not(category_name),
             related = db.get_similar_thoughts(category_name, thought_id)

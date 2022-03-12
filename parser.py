@@ -13,6 +13,7 @@ import argparse
 import getpass
 import houdini
 import mistune
+import jinja2
 import app
 import sys
 import re
@@ -66,20 +67,35 @@ def parse_text(unformatted):
         plugins = ["strikethrough", "table", "url", "task_lists"]
     )
     html = md(unformatted)
+
+    return html, get_headers(html)
+
+def get_headers(html):
     root = lxml.html.fromstring(html)
 
     headers = []
+    thesmallestlevel = 7
     for node in root.xpath('//h1|//h2|//h3|//h4|//h5//h6'):
+        level = int(node.tag[-1])
+        if level < thesmallestlevel:
+            thesmallestlevel = level
         headers.append((
             # lxml.etree.tostring(node),
             # "<p>%s</p>" % urllib.parse.unquote_plus(node.attrib["id"]),     # possibly insecure?
             urllib.parse.unquote_plus(node.attrib["id"]),
-            int(node.tag[-1]),                                              #   -horrible hack
+            level,                                              #   -horrible hack
             "#%s" % node.attrib["id"])
         )
+    
+    headers = [(i[0], i[1] - thesmallestlevel, i[2]) for i in headers]
     # print(headers)
-
-    return html, headers
+    md_template = jinja2.Template("""
+{% for text, depth, link in contents %}
+{{ "    " * depth }} - [{{ text }}]({{ link }})
+{% endfor %}
+    """)
+    
+    return mistune.html(md_template.render(contents = headers))
 
 def preview_markdown(path, title, category):
     def startBrowser():

@@ -38,41 +38,13 @@
                     </a>         
                 </div>
             </header>
-            <!-- yes, this is stupid asf, using another template would be better (i cant get that to work) -->
-            {% if thought %}
-                <aside>
-                    <h4>{{dt}}</h4>
-                    <h5>contents:</h5>
-                    <ul id="header_linkers">
-                        {% for text, depth, link in headers %}
-                            <li>{{ '#'*depth }} <a href="{{ link }}">{{ text }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    <h5>this category:</h5>
-                    <ul>
-                        <li><b><a href="{{'/thoughts#'+category.replace(' ', '_')}}">{{category}}</a></b></li>
-                    </ul>
-                    <h5>related thoughts:</h5>
-                    <ul>
-                        {% for id_, title, dt, category in related %}
-                            <li><a href="{{'/thought?id=%i' % id_}}">{{title}}</a></li>
-                        {% endfor %}
-                    </ul>
-                    <h5>other categories:</h5>
-                    {% for category_name in othercategories %}
-                        <ul>
-                            <li><a href="{{'/thoughts#'+category_name.replace(' ', '_')}}">{{category_name}}</a></li>
-                        </ul>
-                    {% endfor %}
-                </aside>
-            {% endif %}
             <div id="content">
                 {% block content %}
                 {% endblock %}
             </div>
             <footer>
                 <p>this site is <a href="/thought?id=3">javascript free</a></p>
-                <a href="https://github.com/jwansek/edaweb">sauce code released under gplv3</a>
+                <a href="https://git.eda.gay/eda.gay/file/LICENSE.html">sauce code released under gplv3</a> <a href="https://github.com/jwansek/eda.gay">alternate git link</a>
                 <p>
                     <a href="http://jigsaw.w3.org/css-validator/check/referer">
                         <img style="border:0;width:88px;height:31px"

@@ -1,0 +1,29 @@
+{% extends "template.jinja" %}
+{% block content %}
+    <aside>
+        <h4>{{ dt }}</h4>
+        {% if contents_html != "" %}
+            <h5>contents:</h5>
+            <div id="contents">
+                {{ contents_html|safe }}
+            </div>
+        {% endif %}
+        <h5>this category:</h5>
+        <ul>
+            <li><b><a href="{{'/thoughts#'+category.replace(' ', '_')}}">{{category}}</a></b></li>
+        </ul>
+        <h5>related thoughts:</h5>
+        <ul>
+            {% for id_, title, dt, category in related %}
+                <li><a href="{{'/thought?id=%i' % id_}}">{{title}}</a></li>
+            {% endfor %}
+        </ul>
+        <h5>other categories:</h5>
+        {% for category_name in othercategories %}
+            <ul>
+                <li><a href="{{'/thoughts#'+category_name.replace(' ', '_')}}">{{category_name}}</a></li>
+            </ul>
+        {% endfor %}
+    </aside>
+    {{ md_html|safe }}
+{% endblock %}

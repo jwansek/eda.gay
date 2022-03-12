@@ -250,4 +250,4 @@ if __name__ == "__main__":
     import parser
     with Database() as db:
         # print(db.get_similar_thoughts("about me", 5))
-        print(parser.parse_file("cpus.md"))
+        print(parser.parse_file("out.md"))

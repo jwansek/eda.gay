@@ -108,11 +108,16 @@ aside {
     float: right;
 }
 
-#header_linkers {
+#contents {
     font-size: xx-small;
 }
 
-#header_linkers li {
+#contents ul {
+    padding-left: 12px;
+    line-height: 3px;
+  }
+
+#contents ul li {
     list-style: none;
 }
 
