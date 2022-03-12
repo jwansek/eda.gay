@@ -94,7 +94,7 @@ def get_thought():
     with database.Database() as db:
         try:
             category_name, title, dt, parsed, headers = parser.get_thought_from_id(db, thought_id)
-            print(headers)
+            # print(headers)
         except TypeError:
             flask.abort(404)
             return

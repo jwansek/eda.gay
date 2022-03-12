@@ -89,7 +89,11 @@ def get_headers(html):
     
     headers = [(i[0], i[1] - thesmallestlevel, i[2]) for i in headers]
     # print(headers)
+    # there is a bug here-
+    # it must start with the largest header and only go up and down in increments of one
+    #       TODO: fix it!
     md_template = jinja2.Template("""
+ - dummy header
 {% for text, depth, link in contents %}
 {{ "    " * depth }} - [{{ text }}]({{ link }})
 {% endfor %}
