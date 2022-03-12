@@ -57,7 +57,7 @@ def index():
             return flask.render_template(
                 "index.jinja", 
                 **get_template_items("eden's site :3", db),
-                markdown = parser.parse_text(f.read()),
+                markdown = parser.parse_text(f.read())[0],
                 featured_thoughts = db.get_featured_thoughts(),
                 tweets = db.get_cached_tweets(7) + [("view all tweets...", db.get_my_twitter())],
                 commits = db.get_cached_commits(since = datetime.datetime.now() - datetime.timedelta(days = 7))
@@ -93,7 +93,8 @@ def get_thought():
     thought_id = flask.request.args.get("id", type=int)
     with database.Database() as db:
         try:
-            category_name, title, dt, parsed = parser.get_thought_from_id(db, thought_id)
+            category_name, title, dt, parsed, headers = parser.get_thought_from_id(db, thought_id)
+            print(headers)
         except TypeError:
             flask.abort(404)
             return
@@ -102,6 +103,7 @@ def get_thought():
             **get_template_items(title, db),
             thought = True,
             dt = "published: " + str(dt),
+            headers = headers,
             category = category_name,
             othercategories = db.get_categories_not(category_name),
             related = db.get_similar_thoughts(category_name, thought_id)

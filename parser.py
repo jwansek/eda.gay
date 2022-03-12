@@ -6,17 +6,19 @@ from pygments.formatters import HtmlFormatter, ClassNotFound
 from pygments.lexers import get_lexer_by_name
 import urllib.parse
 import webbrowser
+import lxml.etree
+import lxml.html
 import database
 import argparse
 import getpass
 import houdini
-import misaka
+import mistune
 import app
 import sys
 import re
 import os
 
-class HighlighterRenderer(misaka.SaferHtmlRenderer):
+class EdawebRenderer(mistune.HTMLRenderer):
     def blockcode(self, text, lang):
         try:
             lexer = get_lexer_by_name(lang, stripall=True)
@@ -29,42 +31,55 @@ class HighlighterRenderer(misaka.SaferHtmlRenderer):
         # default
         return '\n<pre><code>{}</code></pre>\n'.format(houdini.escape_html(text.strip()))
 
-    def blockquote(self, content):
+    def block_quote(self, content):
         content = content[3:-5] # idk why this is required...
         out = '\n<blockquote>'
         for line in houdini.escape_html(content.strip()).split("\n"):
             out += '\n<span class="quote">{}</span><br>'.format(line)
         return out + '\n</blockquote>'
 
-    def image(self, link, title, alt):
+    def image(self, link, text, title):
         return "<a href='%s' target='_blank'><img alt='%s' src='%s'></a>" % (
-            urlparse(link)._replace(query='').geturl(), alt, link
+            urlparse(link)._replace(query='').geturl(), text, link
         )
 
-    def header(self, content, level):
-        # if level > 1:
-        hash_ = urllib.parse.quote_plus(content)
+    def heading(self, text, level):
+        hash_ = urllib.parse.quote_plus(text)
         return "<h%d id='%s'>%s <a class='header_linker' href='#%s'>[#]</a></h%d>" % (
-            level, hash_, content, hash_, level
+            level, hash_, text, hash_, level
         )
-        # else:
-        #     return "<h1>%s</h1>" % content
 
 def get_thought_from_id(db, id_):
     category_name, title, dt, markdown = db.get_thought(id_)
-    return category_name, title, dt, parse_text(markdown)
+    html, headers = parse_text(markdown)
+    return category_name, title, dt, html, headers
 
 def parse_file(path):
     with open(path, "r") as f:
         unformatted = f.read()
 
-    return parse_text(unformatted)    
+    return parse_text(unformatted)[0]    
 
 def parse_text(unformatted):
-    renderer = HighlighterRenderer()
-    md = misaka.Markdown(renderer, extensions=('fenced-code', 'quote'))
+    md = mistune.create_markdown(
+        renderer = EdawebRenderer(), 
+        plugins = ["strikethrough", "table", "url", "task_lists"]
+    )
+    html = md(unformatted)
+    root = lxml.html.fromstring(html)
 
-    return md(unformatted)
+    headers = []
+    for node in root.xpath('//h1|//h2|//h3|//h4|//h5//h6'):
+        headers.append((
+            # lxml.etree.tostring(node),
+            # "<p>%s</p>" % urllib.parse.unquote_plus(node.attrib["id"]),     # possibly insecure?
+            urllib.parse.unquote_plus(node.attrib["id"]),
+            int(node.tag[-1]),                                              #   -horrible hack
+            "#%s" % node.attrib["id"])
+        )
+    # print(headers)
+
+    return html, headers
 
 def preview_markdown(path, title, category):
     def startBrowser():

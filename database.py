@@ -247,6 +247,7 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
     return sorted(out, key = lambda a: a["datetime"], reverse = True) 
 
 if __name__ == "__main__":
+    import parser
     with Database() as db:
         # print(db.get_similar_thoughts("about me", 5))
-        print(db.get_iso_cd_options())
+        print(parser.parse_file("cpus.md"))

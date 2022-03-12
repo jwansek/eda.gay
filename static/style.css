@@ -108,6 +108,14 @@ aside {
     float: right;
 }
 
+#header_linkers {
+    font-size: xx-small;
+}
+
+#header_linkers li {
+    list-style: none;
+}
+
 #tags {
     font-size: xx-small;
 }

@@ -42,6 +42,12 @@
             {% if thought %}
                 <aside>
                     <h4>{{dt}}</h4>
+                    <h5>contents:</h5>
+                    <ul id="header_linkers">
+                        {% for text, depth, link in headers %}
+                            <li>{{ '#'*depth }} <a href="{{ link }}">{{ text }}</a></li>
+                        {% endfor %}
+                    </ul>
                     <h5>this category:</h5>
                     <ul>
                         <li><b><a href="{{'/thoughts#'+category.replace(' ', '_')}}">{{category}}</a></b></li>
