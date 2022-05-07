@@ -18,12 +18,6 @@ import os
 
 theLastId = 0
 
-def get_isos(iso_dir):
-    print(os.path.exists(iso_dir))
-    return [
-        i for i in os.listdir(iso_dir)
-    ]
-
 def humanbytes(B):
    'Return the given bytes as a human friendly KB, MB, GB, or TB string'
    B = float(B)
@@ -234,14 +228,8 @@ def link_deleted(url):
     return text[text.find("<title>") + 7 : text.find("</title>")] in ["Error | nitter", "イラストコミュニケーションサービス[pixiv]"]
 
 if __name__ == "__main__":
-    # sbi = get_random_image(["lio_fotia", "promare"])
-    # print(sbi.tags)
-    # print(sbi.source)
-    # print(sbi.imurl)
-    # print(sbi.remove_tag("promare"))
-
-    import configparser
-    CONFIG = configparser.ConfigParser()
-    CONFIG.read("edaweb.conf")
-
-    print(get_isos(CONFIG.get("cds", "location")))
+    sbi = get_random_image(["lio_fotia", "promare"])
+    print(sbi.tags)
+    print(sbi.source)
+    print(sbi.imurl)
+    print(sbi.remove_tag("promare"))

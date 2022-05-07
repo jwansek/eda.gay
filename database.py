@@ -17,20 +17,20 @@ class Database:
     passwd:str = None
 
     def __enter__(self):
-        config = configparser.ConfigParser()
-        config.read("edaweb.conf")
+        self.config = configparser.ConfigParser()
+        self.config.read("edaweb.conf")
 
         if self.safeLogin:
             self.__connection = pymysql.connect(
-                **config["mysql"],
+                **self.config["mysql"],
                 charset = "utf8mb4"
             )
         else:
             self.__connection = pymysql.connect(
                 user = self.user,
                 passwd = self.passwd,
-                host = config["mysql"]["host"],
-                db = config["mysql"]["db"],
+                host = self.config["mysql"]["host"],
+                db = self.config["mysql"]["db"],
                 charset = "utf8mb4"
             )
         return self
@@ -184,15 +184,19 @@ class Database:
             return cursor.fetchone()[0]
 
     def get_iso_cd_options(self):
-        with self.__connection.cursor() as cursor:
-            cursor.execute("SELECT name FROM isocds;")
-            return [i[0] for i in cursor.fetchall()]
+        iso_dir = self.config.get("cds", "location")
+        return [
+            i
+            for i in os.listdir(iso_dir)
+            if os.path.splitext(i)[-1].lower() in [".iso"]
+            and os.path.getsize(os.path.join(iso_dir, i)) < self.config.getint("cds", "maxsize")
+        ]
 
     def append_cd_orders(self, iso, email, house, street, city, county, postcode, name):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
-            INSERT INTO cd_orders (cd_id, email, house, street, city, county, postcode, name)
-            VALUES ((SELECT cd_id FROM isocds WHERE name = %s), %s, %s, %s, %s, %s, %s, %s);
+            INSERT INTO cd_orders_2 (iso, email, house, street, city, county, postcode, name)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
             """, (iso, email, house, street, city, county, postcode, name))
             id_ = cursor.lastrowid
         self.__connection.commit()
@@ -250,4 +254,4 @@ if __name__ == "__main__":
     import parser
     with Database() as db:
         # print(db.get_similar_thoughts("about me", 5))
-        print(parser.parse_file("out.md"))
+        print(db.get_iso_cd_options())
