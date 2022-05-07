@@ -18,6 +18,12 @@ import os
 
 theLastId = 0
 
+def get_isos(iso_dir):
+    print(os.path.exists(iso_dir))
+    return [
+        i for i in os.listdir(iso_dir)
+    ]
+
 def humanbytes(B):
    'Return the given bytes as a human friendly KB, MB, GB, or TB string'
    B = float(B)
@@ -94,8 +100,8 @@ def get_qbit_stats():
 def get_trans_stats():
     client = clutch.client.Client(
         address = "http://%s:%s/transmission/rpc" % (app.CONFIG["transmission"]["url"], app.CONFIG["transmission"]["port"]),
-        username = app.CONFIG["transmission"]["user"],
-        password = app.CONFIG["transmission"]["passwd"]
+        # username = app.CONFIG["transmission"]["user"],
+        # password = app.CONFIG["transmission"]["passwd"]
     )
     stats = json.loads(client.session.stats().json())
     return {
@@ -228,10 +234,14 @@ def link_deleted(url):
     return text[text.find("<title>") + 7 : text.find("</title>")] in ["Error | nitter", "イラストコミュニケーションサービス[pixiv]"]
 
 if __name__ == "__main__":
-    sbi = get_random_image(["lio_fotia", "promare"])
-    print(sbi.tags)
-    print(sbi.source)
-    print(sbi.imurl)
-    print(sbi.remove_tag("promare"))
+    # sbi = get_random_image(["lio_fotia", "promare"])
+    # print(sbi.tags)
+    # print(sbi.source)
+    # print(sbi.imurl)
+    # print(sbi.remove_tag("promare"))
 
- 
+    import configparser
+    CONFIG = configparser.ConfigParser()
+    CONFIG.read("edaweb.conf")
+
+    print(get_isos(CONFIG.get("cds", "location")))

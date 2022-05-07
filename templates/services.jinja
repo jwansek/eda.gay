@@ -21,29 +21,6 @@
         {% endif %}
     </section>
     <section id="torrents">
-        <h2>qbittorrent</h2>
-        {% if qbit == None %}
-            <p>Couldn't access the qbittorrent API. Is docker container running?</p>
-        {% else %}
-            <table>
-                <tr>
-                    <td>downloaded</td>
-                    <td>{{qbit["bytes_dl"]}}</td>
-                </tr>
-                <tr>
-                    <td>uploaded</td>
-                    <td>{{qbit["bytes_up"]}}</td>
-                </tr>
-                <tr>
-                    <td>torrents</td>
-                    <td>{{qbit["num"]}}</td>
-                </tr>
-                <tr>
-                    <td>ratio</td>
-                    <td>{{qbit["ratio"]}}</td>
-                </tr>
-            </table>
-        {% endif %}
         <h2>transmission</h2>
         {% if trans == None %}
             <p>Couldn't access the transmission API. Is docker container running?</p>
@@ -67,6 +44,11 @@
                 </tr>
             </table>
         {% endif %}
+    <br>
+    <img src="https://nitter.eda.gay/pic/media%2FFRnF3kcXwAAHE6v.png%3Fname%3Dorig">
+    <img src="https://nitter.eda.gay/pic/media%2FFRnF6I0WUAEq4FD.png%3Fname%3Dorig">
+    <br>
+    <a href="https://nitter.eda.gay/estrogenizedboy/status/1520464127516422144#m">statistics of my two old torrent clients which were shut down recently ;_;</a>
     </section>
     <section id=pihole>
         <h2>pihole</h2>
