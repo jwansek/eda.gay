@@ -7,6 +7,10 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 [click here for a linux ISO CD to be posted to you for free](https://eda.gay/isocd)
 
 ## FOSS alternative services
+
+*because I'm currently in the process of moving house, the [server situation](https://eda.gay/thought?id=17) is different so these services may or may not be online right now. also  its why [the services page](https://eda.gay/services) is broken atm.*
+
+
 - [nextcloud - dropbox (+ much more!) alternative](https://nc.eda.gay)
 - [invidious - youtube alternative](https://invidious.eda.gay)
 - [nitter - alternative twitter frontend](https://nitter.eda.gay)
