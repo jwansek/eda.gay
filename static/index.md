@@ -23,4 +23,5 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 - [boymoder.network](https://boymoder.network/) - website for boymoder awareness
 - [4chan.org/lgbt/](https://boards.4channel.org/lgbt/) - but dont blame me if u catch brainworms
 - [https://www.math.uni-bielefeld.de/~sillke/Twister/fun/elevator-fun90.html](https://www.math.uni-bielefeld.de/~sillke/Twister/fun/elevator-fun90.html) any website with a URL like this is gonna be good
-- https://boymoder.moe/
+- [boymoder.moe/](https://nyaomidev.github.io/boymoder.moe/)
+

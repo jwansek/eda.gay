@@ -1,14 +1,20 @@
 version: '3'
 services:
-  edaweb:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: jwansek/edaweb
-    volumes:
-      - /media/ISOs/:/media/ISOs/
-      - ./static/:/app/static/
-      - ./edaweb.conf:/app/edaweb.conf
-    ports:
-      - "6969:6969"
+    edaweb:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        image: jwansek/edaweb
+        volumes:
+            - /media/ISOs/:/media/ISOs/
+            - ./static/:/app/static/
+            - ./edaweb.conf:/app/edaweb.conf
+        ports:
+            - "6969:6969"
+        networks:
+            - db-network
 
+networks:
+    db-network:
+        name: mariadb
+        external: true
