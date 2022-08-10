@@ -13,6 +13,8 @@ services:
             - "6969:6969"
         networks:
             - db-network
+        external_links:
+            - mariadb:mysql
 
 networks:
     db-network:
