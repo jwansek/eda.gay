@@ -1,4 +1,4 @@
-{% extends "template.jinja" %}
+{% extends "template.html.j2" %}
 {% block content %}
 <article id=statusTables>
     <section id=docker>
@@ -42,13 +42,17 @@
                     <td>ratio</td>
                     <td>{{trans["ratio"]}}</td>
                 </tr>
+                <tr>
+                    <td>active for</td>
+                    <td>{{trans["active_for"]}}</td>
+                </tr>
             </table>
         {% endif %}
     <br>
+    <a href="https://nitter.eda.gay/estrogenizedboy/status/1520464127516422144#m">statistics of my two old torrent clients which were shut down recently ;_;</a>
+    <br>
     <img src="https://nitter.eda.gay/pic/media%2FFRnF3kcXwAAHE6v.png%3Fname%3Dorig">
     <img src="https://nitter.eda.gay/pic/media%2FFRnF6I0WUAEq4FD.png%3Fname%3Dorig">
-    <br>
-    <a href="https://nitter.eda.gay/estrogenizedboy/status/1520464127516422144#m">statistics of my two old torrent clients which were shut down recently ;_;</a>
     </section>
     <section id=pihole>
         <h2>pihole</h2>

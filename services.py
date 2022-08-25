@@ -70,6 +70,7 @@ def get_docker_stats():
         for container in client.containers.list(all = True)
     }
 
+# currently unused
 @timeout
 def get_qbit_stats():
     numtorrents = 0
@@ -98,11 +99,13 @@ def get_trans_stats():
         # password = app.CONFIG["transmission"]["passwd"]
     )
     stats = json.loads(client.session.stats().json())
+    active_for = datetime.timedelta(seconds = stats["arguments"]["cumulative_stats"]["seconds_active"])
     return {
        "bytes_dl": humanbytes(stats["arguments"]["cumulative_stats"]["downloaded_bytes"]),
        "bytes_up": humanbytes(stats["arguments"]["cumulative_stats"]["uploaded_bytes"]),
        "num": stats["arguments"]["torrent_count"],
-       "ratio": "%.3f" % (float(stats["arguments"]["cumulative_stats"]["uploaded_bytes"]) / float(stats["arguments"]["cumulative_stats"]["downloaded_bytes"]))
+       "ratio": "%.3f" % (float(stats["arguments"]["cumulative_stats"]["uploaded_bytes"]) / float(stats["arguments"]["cumulative_stats"]["downloaded_bytes"])),
+       "active_for": str(active_for)
     }
 
 @timeout
@@ -228,8 +231,4 @@ def link_deleted(url):
     return text[text.find("<title>") + 7 : text.find("</title>")] in ["Error | nitter", "イラストコミュニケーションサービス[pixiv]"]
 
 if __name__ == "__main__":
-    sbi = get_random_image(["lio_fotia", "promare"])
-    print(sbi.tags)
-    print(sbi.source)
-    print(sbi.imurl)
-    print(sbi.remove_tag("promare"))
+    print(get_trans_stats())

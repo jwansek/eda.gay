@@ -55,7 +55,7 @@ def index():
     with database.Database() as db:
         with open(os.path.join("static", "index.md"), "r") as f:
             return flask.render_template(
-                "index.jinja", 
+                "index.html.j2", 
                 **get_template_items("eden's site :3", db),
                 markdown = parser.parse_text(f.read())[0],
                 featured_thoughts = db.get_featured_thoughts(),
@@ -71,7 +71,7 @@ def robots():
 def discord():
     with database.Database() as db:
         return flask.render_template(
-            "discord.jinja", 
+            "discord.html.j2", 
             **get_template_items("discord", db),
             discord = CONFIG["discord"]["username"]
         )
@@ -80,10 +80,9 @@ def discord():
 def serve_services():
     with database.Database() as db:
         return flask.render_template(
-            "services.jinja",
+            "services.html.j2",
             **get_template_items("services", db),
             docker = services.get_docker_stats(),
-            qbit = services.get_qbit_stats(),
             trans = services.get_trans_stats(),
             pihole = services.get_pihole_stats()
         )
@@ -99,7 +98,7 @@ def get_thought():
             flask.abort(404)
             return
         return flask.render_template(
-            "thought.jinja",
+            "thought.html.j2",
             **get_template_items(title, db),
             md_html = parsed,
             contents_html = headers,
@@ -121,7 +120,7 @@ def get_thoughts():
                 tree[category].append((id_, title, str(dt)))
 
         return flask.render_template(
-            "thoughts.jinja",
+            "thoughts.html.j2",
             **get_template_items("thoughts", db),
             tree = tree
         )
@@ -155,7 +154,7 @@ def serve_nhdl():
 
         except (KeyError, ValueError):
             return flask.render_template(
-                "nhdl.jinja",
+                "nhdl.html.j2",
                 **get_template_items("Hentai Downloader", db)
             )
 
@@ -163,7 +162,7 @@ def serve_nhdl():
 def serve_iso_form():
     with database.Database() as db:
         return flask.render_template(
-            "isocd.jinja",
+            "isocd.html.j2",
             **get_template_items("Get a GNU/Linux install CD", db),
             iso_options = db.get_iso_cd_options()
         )
@@ -188,7 +187,7 @@ def get_iso_cd():
         id_ = db.append_cd_orders(**req)
         print(id_)
         return flask.render_template(
-            "isocd_confirmation.jinja",
+            "isocd_confirmation.html.j2",
             **get_template_items("Get a GNU/Linux install CD", db),
             email = req["email"],
             req = req,
@@ -210,7 +209,7 @@ def serve_random():
 
     with database.Database() as db:
         return flask.render_template(
-            "random.jinja",
+            "random.html.j2",
             **get_template_items("random image", db),
             sbi = sbi,
             localimg = "/img/random.jpg?seed=%i" % random.randint(0, 9999)
@@ -222,7 +221,7 @@ def preview():
     if "PREVIEW" in os.environ:
         with database.Database() as db:
             return flask.render_template_string(
-                 '{% extends "template.jinja" %}\n{% block content %}\n' + os.environ["PREVIEW"] + '\n{% endblock %}',
+                 '{% extends "template.html.j2" %}\n{% block content %}\n' + os.environ["PREVIEW"] + '\n{% endblock %}',
                 **get_template_items(os.environ["PREVIEW_TITLE"], db),
                 thought = True,
                 dt = "preview rendered: " + str(datetime.datetime.now()),
