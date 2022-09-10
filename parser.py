@@ -64,7 +64,7 @@ def parse_file(path):
 def parse_text(unformatted):
     md = mistune.create_markdown(
         renderer = EdawebRenderer(), 
-        plugins = ["strikethrough", "table", "url", "task_lists"]
+        plugins = ["strikethrough", "table", "url", "task_lists", "def_list"]
     )
     html = md(unformatted)
 
