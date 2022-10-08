@@ -17,3 +17,4 @@ waitress
 houdini.py
 Pygments
 mistune
+twython==3.8.2

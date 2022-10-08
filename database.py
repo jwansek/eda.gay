@@ -6,9 +6,11 @@ import configparser
 import threading
 import datetime
 import requests
+import twython
 import pymysql
 import random
 import os
+import re
 
 @dataclass
 class Database:
@@ -202,9 +204,85 @@ class Database:
         self.__connection.commit()
         return id_
 
+    def append_diary(self, tweet_id, tweeted_at, replying_to, tweet):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("INSERT INTO diary VALUES (%s, %s, %s, %s);", (tweet_id, tweeted_at, replying_to, tweet))
+        print("Appended diary with tweet '%s'" % tweet)
+
+    def append_diary_images(self, tweet_id, imurl):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("INSERT INTO diaryimages (tweet_id, link) VALUES (%s, %s);", (tweet_id, imurl))
+
+    def get_diary(self, twitteracc = "FUCKEDUPTRANNY"):
+        threading.Thread(target = update_cache).start()
+        out = {}
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL ORDER BY tweeted_at DESC;")
+            for tweet_id, tweeted_at, tweet_text in cursor.fetchall():
+                # print(tweet_id, tweeted_at, tweet_text)
+                out[tweeted_at] = [{
+                    "text": tweet_text, 
+                    "images": self.get_diary_image(tweet_id), 
+                    "link": "https://%s/%s/status/%d" % (self.config.get("nitter", "domain"), twitteracc, tweet_id)
+                }]
+
+                next_tweet = self.get_child_tweets(tweet_id)
+                while next_tweet is not None:
+                    tweet, id_ = next_tweet
+                    out[tweeted_at].append(tweet)
+                    next_tweet = self.get_child_tweets(id_)
+        
+        return out
+
+    def get_diary_image(self, tweet_id):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT link FROM diaryimages WHERE tweet_id = %s;", (tweet_id, ))
+            return [i[0] for i in cursor.fetchall()]
+        
+    def get_child_tweets(self, parent_id, twitteracc = "FUCKEDUPTRANNY"):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT tweet_id, tweet FROM diary WHERE replying_to = %s;", (parent_id, ))
+            out = cursor.fetchall()
+        if out == ():
+            return None
+        
+        out = out[0]
+        id_ = out[0]
+        return {"text": out[1], "images": self.get_diary_image(id_), "link": "https://%s/%s/status/%d" % (self.config.get("nitter", "domain"), twitteracc, id_)}, id_
+
+    def get_newest_diary_tweet_id(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT MAX(tweet_id) FROM diary;")
+            return cursor.fetchone()[0]
+
+    def fetch_diary(self, twitteracc = "FUCKEDUPTRANNY"):
+        twitter = twython.Twython(*dict(dict(self.config)["twitter"]).values())
+        for tweet in twitter.search(q = "(from:%s)" % twitteracc, since_id = self.get_newest_diary_tweet_id())["statuses"]:
+            tweet_id = tweet["id"]
+            tweeted_at = datetime.datetime.strptime(tweet["created_at"], "%a %b %d %H:%M:%S %z %Y")
+            replying_to = tweet["in_reply_to_status_id"]
+            tweet_text = re.sub(r"https://t\.co/\w{10}", "", tweet["text"], 0, re.MULTILINE)
+            
+            if tweet["in_reply_to_screen_name"] == twitteracc or tweet["in_reply_to_screen_name"] is None:
+                self.append_diary(tweet_id, tweeted_at, replying_to, tweet_text)
+
+            if "media" in tweet["entities"].keys():
+                associated_images = [
+                    i["media_url_https"].replace("pbs.twimg.com", self.config.get("nitter", "domain") + "/pic") 
+                    for i in tweet["entities"]["media"]
+                ]
+                for im in associated_images:
+                    self.append_diary_images(tweet_id, im)
+
+        self.__connection.commit()
+        print("Fetch completed.")
+
+        
+
 def update_cache():
     # print("updating cache...")
     with Database() as db:
+        db.fetch_diary()
         db.update_twitter_cache(request_recent_tweets(10000))
         # print("Done updating twitter cache...")
         db.update_commit_cache(request_recent_commits(since = db.get_last_commit_time()))
@@ -250,8 +328,7 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
             })
     return sorted(out, key = lambda a: a["datetime"], reverse = True) 
 
+
 if __name__ == "__main__":
-    import parser
     with Database() as db:
-        # print(db.get_similar_thoughts("about me", 5))
-        print(db.get_iso_cd_options())
+        print(db.get_diary())
