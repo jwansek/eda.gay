@@ -12,8 +12,9 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 - [invidious - youtube alternative](https://invidious.eda.gay)
 - [nitter - alternative twitter frontend](https://nitter.eda.gay)
 - [git server - github alternative](https://git.eda.gay/)
+- [another git server - this one with gitolite for authentication](https://cgit.eda.gay)
 - [bibliogram - less annoying instagram front end](https://bibliogram.eda.gay/applysettings/c8009ec7533d542a90bb1d41563435c1)
-- [emby - web player for ~~legally downloaded~~ TV and films](https://emby.eda.gay)
+- [jellyfin - web player for ~~legally downloaded~~ TV and films](https://jellyfin.eda.gay) - RIP emby!
 
 these sites are hosted on my [homelab system](https://eda.gay/thought?id=5#servers+and+switches)
 

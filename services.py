@@ -95,8 +95,8 @@ def get_qbit_stats():
 def get_trans_stats():
     client = clutch.client.Client(
         address = "http://%s:%s/transmission/rpc" % (app.CONFIG["transmission"]["url"], app.CONFIG["transmission"]["port"]),
-        # username = app.CONFIG["transmission"]["user"],
-        # password = app.CONFIG["transmission"]["passwd"]
+        username = app.CONFIG["transmission"]["username"],
+        password = app.CONFIG["transmission"]["password"]
     )
     stats = json.loads(client.session.stats().json())
     active_for = datetime.timedelta(seconds = stats["arguments"]["cumulative_stats"]["seconds_active"])
