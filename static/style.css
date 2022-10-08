@@ -129,6 +129,20 @@ aside {
     font-size: x-small;
 }
 
+#diaryentry {
+    list-style-type: none;
+}
+
+#diaryentry ul {
+    list-style-type: none;
+    display: inline-block;
+}
+
+#diaryentry ul li img {
+    max-height: 150px;
+    margin-top: 10px;
+}
+
 blockquote span {
     color: #789922;
 }

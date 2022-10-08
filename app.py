@@ -67,6 +67,15 @@ def index():
 def robots():
     return flask.send_from_directory("static", "robots.txt")
 
+@app.route("/diary")
+def diary():
+    with database.Database() as db:
+        return flask.render_template(
+            "diary.html.j2",
+            **get_template_items("diary", db),
+            diary = db.get_diary()
+        )
+
 @app.route("/discord")
 def discord():
     with database.Database() as db:

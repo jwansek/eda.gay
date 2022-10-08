@@ -275,9 +275,6 @@ class Database:
                     self.append_diary_images(tweet_id, im)
 
         self.__connection.commit()
-        print("Fetch completed.")
-
-        
 
 def update_cache():
     # print("updating cache...")
