@@ -12,7 +12,7 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 - [invidious - youtube alternative](https://invidious.eda.gay)
 - [nitter - alternative twitter frontend](https://nitter.eda.gay)
 - [git server - github alternative](https://git.eda.gay/)
-- [another git server - this one with gitolite for authentication](https://cgit.eda.gay)
+- [another git server - this one with gitolite for authentication](https://cgit.eda.gay/gitolite-cgit-docker.git/about/)
 - [bibliogram - less annoying instagram front end](https://bibliogram.eda.gay/applysettings/c8009ec7533d542a90bb1d41563435c1)
 - [jellyfin - web player for ~~legally downloaded~~ TV and films](https://jellyfin.eda.gay) - RIP emby!
 
