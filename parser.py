@@ -100,34 +100,16 @@ def get_headers(html):
     
     return mistune.html(md_template.render(contents = headers))
 
-def preview_markdown(path, title, category):
-    def startBrowser():
-        # webbrowser.get("firefox").open("http://localhost:5000/preview")
-        webbrowser.open("http://localhost:5000/preview")
-        del os.environ["PREVIEW"]
-        del os.environ["PREVIEW_TITLE"]
-        del os.environ["CATEGORY"]
-
-    os.environ["PREVIEW"] = parse_file(path)
-    os.environ["PREVIEW_TITLE"] = title
-    os.environ["CATEGORY"] = category
-
-    import threading
-    threading.Timer(1.25, startBrowser ).start()
-    
-    app.app.run(host = "0.0.0.0", debug = True)
-
 def main():
     p = argparse.ArgumentParser()
     subparse = p.add_subparsers(help = "sub-command help")
     save_parser = subparse.add_parser("save", help = "Add a markdown file to the database")
-    preview_parser = subparse.add_parser("preview", help = "Preview a markdown render")
     echo_parser = subparse.add_parser("echo", help = "Print markdown render to stdout")
     update_parser = subparse.add_parser("update", help = "Replace a markdown file")
     export_parser = subparse.add_parser("export", help = "Export a database markdown file to disk")
     list_parser = subparse.add_parser("list", help = "List all the markdowns in the database")
 
-    for s in [save_parser, preview_parser, echo_parser, update_parser]:
+    for s in [save_parser, echo_parser, update_parser]:
         s.add_argument(
             "-m", "--markdown",
             help = "Path to a markdown file",
@@ -135,7 +117,7 @@ def main():
             required = True
         )
     
-    for s in [save_parser, preview_parser]:
+    for s in [save_parser]:
         s.add_argument(
             "-t", "--title",
             help = "Article title",
@@ -208,9 +190,6 @@ def main():
             elif verb == "list":
                 for id_, title, dt, category_name in db.get_all_thoughts():
                     print("%d\t%s\t%s\t%s" % (id_, title, dt, category_name))
-
-    if verb == "preview":
-        preview_markdown(args["markdown"], args["title"], args["category"])
 
     elif verb == "echo":
         print(parse_file(args["markdown"]))

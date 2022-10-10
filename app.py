@@ -224,22 +224,6 @@ def serve_random():
             localimg = "/img/random.jpg?seed=%i" % random.randint(0, 9999)
         )
 
-
-@app.route("/preview")
-def preview():
-    if "PREVIEW" in os.environ:
-        with database.Database() as db:
-            return flask.render_template_string(
-                 '{% extends "template.html.j2" %}\n{% block content %}\n' + os.environ["PREVIEW"] + '\n{% endblock %}',
-                **get_template_items(os.environ["PREVIEW_TITLE"], db),
-                thought = True,
-                dt = "preview rendered: " + str(datetime.datetime.now()),
-                category = os.environ["CATEGORY"],
-                othercategories = db.get_categories_not(os.environ["CATEGORY"])
-            )
-    else:
-        flask.abort(404)
-
 if __name__ == "__main__":
     try:
         if sys.argv[1] == "--production":
