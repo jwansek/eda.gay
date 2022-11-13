@@ -15,6 +15,7 @@ services:
             - db-network
         external_links:
             - mariadb:mysql
+        restart: unless-stopped
 
 networks:
     db-network:
