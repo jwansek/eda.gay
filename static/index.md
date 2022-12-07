@@ -6,6 +6,8 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 
 [click here for a random image of lio fotia](https://eda.gay/random?tags=lio_fotia)
 
+[click here for a random KawoShin image](https://eda.gay/random?tags=nagisa_kaworu+ikari_shinji+yaoi)
+
 [click here for a linux ISO CD to be posted to you for free](https://eda.gay/isocd)
 
 ## FOSS alternative services
@@ -23,11 +25,12 @@ these sites are hosted on my [homelab system](https://eda.gay/thought?id=5#serve
 ![startech rack cropped](https://eda.gay/img/IMG_20220811_133224877_HDR_crop.jpg?h=300&w=5000)
 
 ## nice websites
-- [wiby.me](http://wiby.me/) - search engine for old style websites with limited javascript
+- [wiby.me](http://wiby.me/) - search engine for old style websites with limited javascript (my site used to be on here but it got blacklisted for some reason?)
 - [boymoder.network](https://boymoder.network/) - website for boymoder awareness
 - [4chan.org/lgbt/](https://boards.4channel.org/lgbt/) - but dont blame me if u catch brainworms
 - [https://www.math.uni-bielefeld.de/~sillke/Twister/fun/elevator-fun90.html](https://www.math.uni-bielefeld.de/~sillke/Twister/fun/elevator-fun90.html) any website with a URL like this is gonna be good
 - [boymoder.moe](https://nyaomidev.github.io/boymoder.moe/)
 - [blahaj.quest](https://blahaj.quest/)
+- [john.citrons.xyz](https://john.citrons.xyz/) - for the nice 'ads' featured at the bottom of my page
 
 
