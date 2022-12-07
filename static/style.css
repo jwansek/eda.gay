@@ -181,6 +181,13 @@ footer {
     padding: 300px 10px 5px 20px;
     margin-bottom: 300px;
     font-size: xx-small;
+    align-content: center;
+}
+
+#footer_banners {
+    display: flex;
+    align-items: center;
+
 }
 
 @media (max-width: 1023px) {
