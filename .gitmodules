@@ -1,0 +1,3 @@
+[submodule "homelab-wiki"]
+	path = homelab-wiki
+	url = git@github.com:jwansek/homelab-wiki.git
