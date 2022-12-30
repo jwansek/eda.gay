@@ -13,11 +13,35 @@ services:
             - "6969:6969"
         networks:
             - db-network
+            - edaweb-net
+        external_links:
+            - mariadb:mysql
+        restart: unless-stopped
+
+    homelab-wiki:
+        build:
+            context: ./homelab-wiki
+            dockerfile: Dockerfile
+        image: jwansek/edawiki
+        volumes:
+            - ./homelab-wiki/images:/var/www/html/images
+            - ./homelab-wiki/LocalSettings.php:/var/www/html/LocalSettings.php
+        env_file:
+            - ./homelab-wiki/wiki.env
+        ports:
+            - "6970:80"
+        networks:
+            - db-network
+            - edaweb-net
         external_links:
             - mariadb:mysql
         restart: unless-stopped
 
 networks:
+    edaweb-net:
+        external:
+            name: edaweb-net
+
     db-network:
-        name: mariadb
-        external: true
+        external:
+            name: mariadb
