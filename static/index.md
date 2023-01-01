@@ -20,7 +20,7 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 - [bibliogram - less annoying instagram front end](https://bibliogram.eda.gay/applysettings/c8009ec7533d542a90bb1d41563435c1)
 - [jellyfin - web player for ~~legally downloaded~~ TV and films](https://jellyfin.eda.gay) - RIP emby!
 
-these sites are hosted on my [homelab system](https://eda.gay/thought?id=5#servers+and+switches)
+these sites are hosted on my [homelab system](https://wiki.eda.gay)
 
 ![startech rack cropped](https://eda.gay/img/IMG_20220811_133224877_HDR_crop.jpg?h=300&w=5000)
 
