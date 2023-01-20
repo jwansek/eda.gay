@@ -276,11 +276,15 @@ class Database:
             access_token = self.config.get("twitter", "oauth_2_token")
         )
         
-        for tweet in twitter.search(q = "(from:%s)" % twitteracc, since_id = self.get_newest_diary_tweet_id())["statuses"]:
+        for tweet in twitter.search(
+                q = "(from:%s)" % twitteracc, since_id = self.get_newest_diary_tweet_id(),
+                tweet_mode = 'extended'
+            )["statuses"]:
+
             tweet_id = tweet["id"]
             tweeted_at = datetime.datetime.strptime(tweet["created_at"], "%a %b %d %H:%M:%S %z %Y")
             replying_to = tweet["in_reply_to_status_id"]
-            tweet_text = re.sub(r"https://t\.co/\w{10}", "", tweet["text"], 0, re.MULTILINE)
+            tweet_text = re.sub(r"https://t\.co/\w{10}", "", tweet["full_text"], 0, re.MULTILINE)
             
             if tweet["in_reply_to_screen_name"] == twitteracc or tweet["in_reply_to_screen_name"] is None:
                 self.append_diary(tweet_id, tweeted_at, replying_to, tweet_text)
