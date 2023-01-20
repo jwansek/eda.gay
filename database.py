@@ -185,6 +185,9 @@ class Database:
             cursor.execute("SELECT link FROM headerLinks WHERE name = 'twitter';")
             return cursor.fetchone()[0]
 
+    def get_my_diary_twitter(self):
+        return self.config.get("twitter", "diary_account")
+
     def get_iso_cd_options(self):
         iso_dir = self.config.get("cds", "location")
         return [
@@ -239,7 +242,7 @@ class Database:
             cursor.execute("SELECT link FROM diaryimages WHERE tweet_id = %s;", (tweet_id, ))
             return [i[0] for i in cursor.fetchall()]
         
-    def get_child_tweets(self, parent_id, twitteracc = "FUCKEDUPTRANNY"):
+    def get_child_tweets(self, parent_id):
         with self.__connection.cursor() as cursor:
             cursor.execute("SELECT tweet_id, tweet FROM diary WHERE replying_to = %s;", (parent_id, ))
             out = cursor.fetchall()
@@ -248,14 +251,22 @@ class Database:
         
         out = out[0]
         id_ = out[0]
-        return {"text": out[1], "images": self.get_diary_image(id_), "link": "https://%s/%s/status/%d" % (self.config.get("nitter", "domain"), twitteracc, id_)}, id_
+        return {
+            "text": out[1], 
+            "images": self.get_diary_image(id_), 
+            "link": "https://%s/%s/status/%d" % (
+                self.config.get("nitter", "domain"), self.get_my_diary_twitter(), id_
+            )
+        }, id_
 
     def get_newest_diary_tweet_id(self):
         with self.__connection.cursor() as cursor:
             cursor.execute("SELECT MAX(tweet_id) FROM diary;")
             return cursor.fetchone()[0]
 
-    def fetch_diary(self, twitteracc = "FUCKEDUPTRANNY"):
+    def fetch_diary(self):
+        twitteracc = self.get_my_diary_twitter()
+
         twitter = twython.Twython(*dict(dict(self.config)["twitter"]).values())
         for tweet in twitter.search(q = "(from:%s)" % twitteracc, since_id = self.get_newest_diary_tweet_id())["statuses"]:
             tweet_id = tweet["id"]
