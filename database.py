@@ -19,7 +19,7 @@ class Database:
     passwd:str = None
 
     def __enter__(self):
-        self.config = configparser.ConfigParser()
+        self.config = configparser.ConfigParser(interpolation = None)
         self.config.read("edaweb.conf")
 
         if self.safeLogin:
@@ -216,7 +216,7 @@ class Database:
         with self.__connection.cursor() as cursor:
             cursor.execute("INSERT INTO diaryimages (tweet_id, link) VALUES (%s, %s);", (tweet_id, imurl))
 
-    def get_diary(self, twitteracc = "FUCKEDUPTRANNY"):
+    def get_diary(self):
         threading.Thread(target = update_cache).start()
         out = {}
         with self.__connection.cursor() as cursor:
@@ -226,7 +226,11 @@ class Database:
                 out[tweeted_at] = [{
                     "text": tweet_text, 
                     "images": self.get_diary_image(tweet_id), 
-                    "link": "https://%s/%s/status/%d" % (self.config.get("nitter", "domain"), twitteracc, tweet_id)
+                    "link": "https://%s/%s/status/%d" % (
+                        self.config.get("nitter", "domain"), 
+                        self.get_my_diary_twitter(), 
+                        tweet_id
+                    )
                 }]
 
                 next_tweet = self.get_child_tweets(tweet_id)
@@ -267,7 +271,11 @@ class Database:
     def fetch_diary(self):
         twitteracc = self.get_my_diary_twitter()
 
-        twitter = twython.Twython(*dict(dict(self.config)["twitter"]).values())
+        twitter = twython.Twython(
+            self.config.get("twitter", "app_key"), 
+            access_token = self.config.get("twitter", "oauth_2_token")
+        )
+        
         for tweet in twitter.search(q = "(from:%s)" % twitteracc, since_id = self.get_newest_diary_tweet_id())["statuses"]:
             tweet_id = tweet["id"]
             tweeted_at = datetime.datetime.strptime(tweet["created_at"], "%a %b %d %H:%M:%S %z %Y")
@@ -339,4 +347,4 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
 
 if __name__ == "__main__":
     with Database() as db:
-        print(db.get_diary())
+        print(db.fetch_diary())

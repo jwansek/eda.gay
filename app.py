@@ -16,7 +16,7 @@ import os
 import io
 
 app = flask.Flask(__name__)
-CONFIG = configparser.ConfigParser()
+CONFIG = configparser.ConfigParser(interpolation = None)
 CONFIG.read("edaweb.conf")
 shown_images = set()
 
