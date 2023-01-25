@@ -2,7 +2,7 @@
 
 ## haiiiiiii
 my name is eden and im a 21yo (boymoder) computer science undergraduate. i made my own website to encourage others to do so too.
-i'll post my thoughts on here sometimes, and use this site to link to other stuff i host.
+i'll post my thoughts on here sometimes, and use this site to link to other stuff i host [more about me](/thought?id=2).
 
 [click here for a random image of lio fotia](https://eda.gay/random?tags=lio_fotia)
 

@@ -19,6 +19,7 @@ app = flask.Flask(__name__)
 CONFIG = configparser.ConfigParser(interpolation = None)
 CONFIG.read("edaweb.conf")
 shown_images = set()
+shown_sidebar_images = set()
 
 def get_pfp_img(db:database.Database):
     global shown_images
@@ -28,6 +29,16 @@ def get_pfp_img(db:database.Database):
     folder = set(dbimg).difference(shown_images)
     choice = random.choice(list(folder))
     shown_images.add(choice)
+    return choice
+
+def get_sidebar_img(db:database.Database):
+    global shown_sidebar_images
+    dbimg = db.get_sidebar_images()
+    if len(shown_sidebar_images) == len(dbimg):
+        shown_sidebar_images = set()
+    folder = set(dbimg).difference(shown_sidebar_images)
+    choice = random.choice(list(folder))
+    shown_sidebar_images.add(choice)
     return choice
 
 def get_correct_article_headers(db:database.Database, title):
@@ -60,7 +71,8 @@ def index():
                 markdown = parser.parse_text(f.read())[0],
                 featured_thoughts = db.get_featured_thoughts(),
                 tweets = db.get_cached_tweets(7) + [("view all tweets...", db.get_my_twitter())],
-                commits = db.get_cached_commits(since = datetime.datetime.now() - datetime.timedelta(days = 7))
+                commits = db.get_cached_commits(since = datetime.datetime.now() - datetime.timedelta(days = 7)),
+                sidebar_img = get_sidebar_img(db)
             )
 
 @app.route("/robots.txt")
@@ -145,7 +157,7 @@ def serve_image(filename):
             return flask.send_from_directory(imdirpath, filename)
 
         img = Image.open(os.path.join(imdirpath, filename))
-        img.thumbnail((w, h), Image.ANTIALIAS)
+        img.thumbnail((w, h), Image.LANCZOS)
         io_ = io.BytesIO()
         img.save(io_, format='JPEG')
         return flask.Response(io_.getvalue(), mimetype='image/jpeg')

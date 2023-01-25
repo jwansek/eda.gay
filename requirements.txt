@@ -7,7 +7,7 @@ transmission-clutch
 dataclasses
 docker
 PiHole-api
-Pillow==8.1.0
+Pillow==9.4.0
 python-qbittorrent==0.4.2
 PyGithub
 lxml

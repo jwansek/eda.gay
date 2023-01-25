@@ -55,6 +55,11 @@ class Database:
             cursor.execute("SELECT alt, url FROM images WHERE pfp_img = 1;")
             return cursor.fetchall()
 
+    def get_sidebar_images(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT alt, url FROM images WHERE sidebar_image = 1;")
+            return cursor.fetchall()
+
     def get_header_articles(self):
         with self.__connection.cursor() as cursor:
             cursor.execute("SELECT articleName, link FROM headerArticles;")
@@ -350,5 +355,7 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
 
 
 if __name__ == "__main__":
+    import app
     with Database() as db:
-        print(db.fetch_diary())
+        print(app.get_sidebar_img(db))
+        # print(db.get_sidebar_images())
