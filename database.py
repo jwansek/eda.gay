@@ -339,23 +339,28 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
     out = []
     for repo in g.get_user().get_repos():
         # print(repo.name, list(repo.get_branches()))
-        for commit in repo.get_commits(since = since):
-            out.append({
-                "repo": repo.name,
-                "message": commit.commit.message,
-                "url": commit.html_url,
-                "datetime": commit.commit.author.date,
-                "stats": {
-                    "additions": commit.stats.additions,
-                    "deletions": commit.stats.deletions,
-                    "total": commit.stats.total
-                }
-            })
+        try:
+            for commit in repo.get_commits(since = since):
+                out.append({
+                    "repo": repo.name,
+                    "message": commit.commit.message,
+                    "url": commit.html_url,
+                    "datetime": commit.commit.author.date,
+                    "stats": {
+                        "additions": commit.stats.additions,
+                        "deletions": commit.stats.deletions,
+                        "total": commit.stats.total
+                    }
+                })
+        except Exception as e:
+            print(e)
+
     return sorted(out, key = lambda a: a["datetime"], reverse = True) 
 
 
 if __name__ == "__main__":
-    import app
-    with Database() as db:
-        print(app.get_sidebar_img(db))
-        # print(db.get_sidebar_images())
+    print(request_recent_commits())
+    #import app
+    #with Database() as db:
+    #    print(app.get_sidebar_img(db))
+    #    # print(db.get_sidebar_images())
