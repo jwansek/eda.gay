@@ -1,0 +1,13 @@
+{% extends "template.html.j2" %}
+{% block content %}
+    <h4><a href="https://curiouscat.live/{{ curiouscat_username }}">ask a question!</a></h4>
+    <dl>
+        {% for id_, link, dt, question, answer in qnas %}
+            <dt><a href="{{ link }}">{{ dt.isoformat() }}</a></dt>
+            <dd>
+                <dt class="question">{{ question }}</dt>
+                <dd class="answer">{{ answer }}</dd>
+            </dd>
+        {% endfor %}
+    </dl>
+{% endblock %}

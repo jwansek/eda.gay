@@ -3,7 +3,9 @@ from dataclasses import dataclass
 from github import Github
 from lxml import html
 import configparser
+import curiouscat
 import threading
+import operator
 import datetime
 import requests
 import twython
@@ -304,9 +306,45 @@ class Database:
 
         self.__connection.commit()
 
+    def get_curiouscat_username(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT link FROM headerLinks WHERE name = 'curiouscat';")
+        return urlparse(cursor.fetchone()[0]).path.split("/")[1]
+
+    def append_curiouscat_qnas(self, qnas):
+        with self.__connection.cursor() as cursor:
+            for qna in qnas:
+                cursor.execute("SELECT curiouscat_id FROM qnas WHERE curiouscat_id = %s;", (qna["id"], ))
+                if cursor.fetchone() is None:
+
+                    cursor.execute("INSERT INTO `qnas` VALUES (%s, %s, %s, %s, %s);", (
+                        qna["id"], qna["link"], qna["datetime"], qna["question"], qna["answer"]
+                    ))
+                    print("Appended question with timestamp %s" % datetime.datetime.fromtimestamp(qna["id"]).isoformat())
+
+                else:
+                    print("Skipped question with timestamp %s" % datetime.datetime.fromtimestamp(qna["id"]).isoformat())
+        self.__connection.commit()
+
+    def get_biggest_curiouscat_timestamp(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT MAX(`timestamp`) FROM `qnas`;")
+            return cursor.fetchone()[0]
+
+    def get_curiouscat_qnas(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM qnas;")
+            return sorted(cursor.fetchall(), key = operator.itemgetter(2), reverse = True)
+
 def update_cache():
     # print("updating cache...")
     with Database() as db:
+        db.append_curiouscat_qnas(
+            curiouscat.get_all_curiouscat_qnas_before(
+                db.get_curiouscat_username(), 
+                db.get_biggest_curiouscat_timestamp()
+            )
+        )
         db.fetch_diary()
         db.update_twitter_cache(request_recent_tweets(10000))
         # print("Done updating twitter cache...")
@@ -359,8 +397,6 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
 
 
 if __name__ == "__main__":
-    print(request_recent_commits())
-    #import app
-    #with Database() as db:
-    #    print(app.get_sidebar_img(db))
-    #    # print(db.get_sidebar_images())
+    # print(request_recent_commits())
+    with Database() as db:
+        print(db.get_curiouscat_qnas())
