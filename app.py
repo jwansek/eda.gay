@@ -241,7 +241,7 @@ def serve_questions():
     with database.Database() as db:
         return flask.render_template(
             "questions.html.j2",
-            **get_template_items("random image", db),
+            **get_template_items("questions and answers", db),
             curiouscat_username = db.get_curiouscat_username(),
             qnas = db.get_curiouscat_qnas()
         )
