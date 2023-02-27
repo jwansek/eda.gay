@@ -5,8 +5,8 @@
         {% for id_, link, dt, question, answer in qnas %}
             <dt><a href="{{ link }}">{{ dt.isoformat() }}</a></dt>
             <dd>
-                <dt class="question">{{ question }}</dt>
-                <dd class="answer">{{ answer }}</dd>
+                <dt class="question"><p>{{ question }}</p></dt>
+                <dd class="answer"><p>{{ answer }}</p></dd>
             </dd>
         {% endfor %}
     </dl>
