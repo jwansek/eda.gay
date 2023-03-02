@@ -227,7 +227,9 @@ class Database:
         threading.Thread(target = update_cache).start()
         out = {}
         with self.__connection.cursor() as cursor:
-            cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL ORDER BY tweeted_at DESC;")
+            # cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL ORDER BY tweeted_at DESC;")
+            # attempt to ignore curiouscat automatic tweets by comparing with the q&a table
+            cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL AND tweet_id NOT IN (SELECT tweet_id FROM diary INNER JOIN qnas ON SUBSTRING(tweet, 1, 16) = SUBSTRING(question, 1, 16)) ORDER BY tweeted_at DESC;")
             for tweet_id, tweeted_at, tweet_text in cursor.fetchall():
                 # print(tweet_id, tweeted_at, tweet_text)
                 out[tweeted_at] = [{
