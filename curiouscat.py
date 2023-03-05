@@ -26,7 +26,7 @@ def get_all_curiouscat_qnas(name):
 def get_all_curiouscat_qnas_before(name, min_dt):
     url = "https://curiouscat.live/api/v2/profile?username=%s&count=100&min_timestamp=%d" % (name, int(min_dt.timestamp()) + 1)
     req = requests.get(url)
-    return post_process(req.json()["posts"], "name")
+    return post_process(req.json()["posts"], name)
 
 def post_process(cc, name):
     return [
