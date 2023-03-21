@@ -240,6 +240,16 @@ def serve_random():
             localimg = "/img/random.jpg?seed=%i" % random.randint(0, 9999)
         )
 
+@app.route("/questions")
+def serve_questions():
+    with database.Database() as db:
+        return flask.render_template(
+            "questions.html.j2",
+            **get_template_items("questions and answers", db),
+            curiouscat_username = db.get_curiouscat_username(),
+            qnas = db.get_curiouscat_qnas()
+        )
+
 if __name__ == "__main__":
     try:
         if sys.argv[1] == "--production":

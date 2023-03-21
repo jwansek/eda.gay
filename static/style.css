@@ -125,6 +125,10 @@ aside {
     font-size: xx-small;
 }
 
+#sidebarImage {
+    transform: translateX(10px);
+}
+
 .header_linker {
     font-size: x-small;
 }
