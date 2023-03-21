@@ -51,9 +51,9 @@ class EdawebRenderer(mistune.HTMLRenderer):
         )
 
 def get_thought_from_id(db, id_):
-    category_name, title, dt, markdown = db.get_thought(id_)
+    category_name, title, dt, markdown, redirect = db.get_thought(id_)
     html, headers = parse_text(markdown)
-    return category_name, title, dt, html, headers
+    return category_name, title, dt, html, headers, redirect
 
 def parse_file(path):
     with open(path, "r") as f:
@@ -67,6 +67,8 @@ def parse_text(unformatted):
         plugins = ["strikethrough", "table", "url", "task_lists", "def_list"]
     )
     html = md(unformatted)
+    if html == "":
+        return "", ""
 
     return html, get_headers(html)
 
@@ -180,7 +182,7 @@ def main():
 
             elif verb == "export":
                 with open(args["out"], "w") as f:
-                    f.writelines(db.get_thought(args["id"])[-1])
+                    f.writelines(db.get_thought(args["id"])[-2])
                 print("Written to %s" % args["out"])
 
             elif verb == "update":

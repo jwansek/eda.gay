@@ -92,7 +92,7 @@ class Database:
     def get_thought(self, id_):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
-            SELECT categories.category_name, thoughts.title, thoughts.dt, thoughts.markdown_text 
+            SELECT categories.category_name, thoughts.title, thoughts.dt, thoughts.markdown_text, thoughts.redirect 
             FROM thoughts INNER JOIN categories 
             ON thoughts.category_id = categories.category_id 
             WHERE thought_id = %s;""", (id_, ))

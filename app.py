@@ -113,11 +113,15 @@ def get_thought():
     thought_id = flask.request.args.get("id", type=int)
     with database.Database() as db:
         try:
-            category_name, title, dt, parsed, headers = parser.get_thought_from_id(db, thought_id)
+            category_name, title, dt, parsed, headers, redirect = parser.get_thought_from_id(db, thought_id)
             # print(headers)
         except TypeError:
             flask.abort(404)
             return
+
+        if redirect is not None:
+            return flask.redirect(redirect, code = 301)
+
         return flask.render_template(
             "thought.html.j2",
             **get_template_items(title, db),
