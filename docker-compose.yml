@@ -22,7 +22,7 @@ services:
         build:
             context: ./homelab-wiki
             dockerfile: Dockerfile
-        image: jwansek/edawiki
+        image: jwansek/edawiki2
         volumes:
             - ./homelab-wiki/images:/var/www/html/images
             # - ./homelab-wiki/LocalSettings.php:/var/www/html/LocalSettings.php

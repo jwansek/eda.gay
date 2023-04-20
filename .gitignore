@@ -1,4 +1,5 @@
 homelab-wiki/wiki.env
+homelab-wiki/images/*
 edaweb.conf
 markdowns/
 static/images/random.jpg
