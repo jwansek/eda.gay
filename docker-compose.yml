@@ -25,7 +25,7 @@ services:
         image: jwansek/edawiki
         volumes:
             - ./homelab-wiki/images:/var/www/html/images
-            - ./homelab-wiki/LocalSettings.php:/var/www/html/LocalSettings.php
+            # - ./homelab-wiki/LocalSettings.php:/var/www/html/LocalSettings.php
         env_file:
             - ./homelab-wiki/wiki.env
         ports:
