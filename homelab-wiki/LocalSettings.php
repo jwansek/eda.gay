@@ -30,7 +30,7 @@ $wgMetaNamespace = "Eden's_Homelab_Wiki";
 $wgScriptPath = "";
 
 ## The protocol and server name to use in fully-qualified URLs
-$wgServer = "http://srv.home:6970";
+$wgServer = "https://wiki.eda.gay";
 
 ## The URL path to static resources (images, scripts, etc.)
 $wgResourceBasePath = $wgScriptPath;
@@ -38,8 +38,7 @@ $wgResourceBasePath = $wgScriptPath;
 ## The URL paths to the logo.  Make sure you change this from the default,
 ## or else you'll overwrite your logo when you upgrade!
 $wgLogos = [
-	'1x' => "$wgResourceBasePath/resources/assets/change-your-logo.svg",
-	'icon' => "$wgResourceBasePath/resources/assets/change-your-logo.svg",
+    '1x' => "$wgResourceBasePath/images/c/c9/Logo.png",
 ];
 
 ## UPO means: this is also a user preference option
