@@ -6,7 +6,7 @@ services:
             dockerfile: Dockerfile
         image: jwansek/edaweb
         volumes:
-            - /media/ISOs/:/media/ISOs/
+            - /tmp/:/media/ISOs/
             - ./static/:/app/static/
             - ./edaweb.conf:/app/edaweb.conf
         ports:

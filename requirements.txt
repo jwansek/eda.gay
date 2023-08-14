@@ -16,5 +16,5 @@ PasteScript==3.2.0
 waitress
 houdini.py
 Pygments
-mistune
+mistune==2.0.3
 twython==3.8.2
