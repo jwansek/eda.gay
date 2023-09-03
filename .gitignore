@@ -6,6 +6,8 @@ static/images/random.jpg
 static/zips/*.zip
 .nfs*
 static/images/Thumbs.db
+nitter/nitter.conf
+nitter/guest_accounts.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

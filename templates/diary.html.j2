@@ -1,7 +1,7 @@
 {% extends "template.html.j2" %}
 {% block content %}
     <h4>this page might not be up-to-date if my diary account is search banned</h4>
-    <p>if in doubt check my <a href="https://twitter.com/FORMER_SHOTA">diary account</a> <br> <s>serves me right for using the official API instead of HTML scraping like i did with the <a href="/">recent tweets</a> thing</s> <br> <a href="https://shadowban.yuzurisa.com/FORMER_SHOTA">check if i'm currently search banned</a></p>
+    <p>if in doubt check my <a href="https://twitter.com/{{ diary_account }}">diary account</a> <br> <a href="https://shadowban.yuzurisa.com/{{ diary_account }}">check if i'm currently search banned</a></p>
     <dl>
         {% for dt, entries in diary.items() %}
             <dt><a href="{{ entries[0]['link'] }}">{{ dt }}</a></dt>

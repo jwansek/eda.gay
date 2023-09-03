@@ -71,7 +71,7 @@ def index():
                 markdown = parser.parse_text(f.read())[0],
                 featured_thoughts = db.get_featured_thoughts(),
                 tweets = db.get_cached_tweets(7) + [("view all tweets...", db.get_my_twitter())],
-                commits = db.get_cached_commits(since = datetime.datetime.now() - datetime.timedelta(days = 7)),
+                commits = db.get_cached_commits()[:7],
                 sidebar_img = get_sidebar_img(db)
             )
 
@@ -85,7 +85,8 @@ def diary():
         return flask.render_template(
             "diary.html.j2",
             **get_template_items("diary", db),
-            diary = db.get_diary()
+            diary = db.get_diary(),
+            diary_account = db.config.get("twitter", "diary_account")
         )
 
 @app.route("/discord")

@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from io import StringIO
 from lxml import html, etree
+from github import Github
 import multiprocessing
 import pihole as ph
 import qbittorrent
+import configparser
 import requests
 import datetime
 import urllib
@@ -13,10 +15,11 @@ import random
 import queue
 import json
 import time
-import app
 import os
 
 theLastId = 0
+CONFIG = configparser.ConfigParser(interpolation = None)
+CONFIG.read("edaweb.conf")
 
 def humanbytes(B):
    'Return the given bytes as a human friendly KB, MB, GB, or TB string'
@@ -51,7 +54,7 @@ def timeout(func):
         t = multiprocessing.Process(target = runFunc, args = (returnVan, func))
         t.start()
 
-        t.join(timeout = app.CONFIG["servicetimeout"].getint("seconds"))
+        t.join(timeout = CONFIG["servicetimeout"].getint("seconds"))
 
         # print("Request took:", time.time() - ti)
         try:
@@ -64,7 +67,7 @@ def timeout(func):
 
 @timeout
 def get_docker_stats():
-    client = docker.DockerClient(base_url = "tcp://%s:%s" % (app.CONFIG["docker"]["url"], app.CONFIG["docker"]["port"]))
+    client = docker.DockerClient(base_url = "tcp://%s:%s" % (CONFIG["docker"]["url"], CONFIG["docker"]["port"]))
     return {
         container.name: container.status
         for container in client.containers.list(all = True)
@@ -76,8 +79,8 @@ def get_qbit_stats():
     numtorrents = 0
     bytes_dl = 0
     bytes_up = 0
-    qb = qbittorrent.Client('http://%s:%s/' % (app.CONFIG["qbittorrent"]["url"], app.CONFIG["qbittorrent"]["port"]))
-    qb.login(username = app.CONFIG["qbittorrent"]["user"], password = app.CONFIG["qbittorrent"]["passwd"])
+    qb = qbittorrent.Client('http://%s:%s/' % (CONFIG["qbittorrent"]["url"], CONFIG["qbittorrent"]["port"]))
+    qb.login(username = CONFIG["qbittorrent"]["user"], password = CONFIG["qbittorrent"]["passwd"])
 
     for torrent in qb.torrents():
         numtorrents += 1
@@ -94,9 +97,9 @@ def get_qbit_stats():
 @timeout
 def get_trans_stats():
     client = clutch.client.Client(
-        address = "http://%s:%s/transmission/rpc" % (app.CONFIG["transmission"]["url"], app.CONFIG["transmission"]["port"]),
-        # username = app.CONFIG["transmission"]["username"],
-        # password = app.CONFIG["transmission"]["password"]
+        address = "http://%s:%s/transmission/rpc" % (CONFIG["transmission"]["url"], CONFIG["transmission"]["port"]),
+        # username = CONFIG["transmission"]["username"],
+        # password = CONFIG["transmission"]["password"]
     )
     stats = json.loads(client.session.stats().json())
     active_for = datetime.timedelta(seconds = stats["arguments"]["cumulative_stats"]["seconds_active"])
@@ -110,7 +113,7 @@ def get_trans_stats():
 
 @timeout
 def get_pihole_stats():
-    pihole = ph.PiHole(app.CONFIG["pihole"]["url"])
+    pihole = ph.PiHole(CONFIG["pihole"]["url"])
     return {
         "status": pihole.status,
         "queries": pihole.total_queries,
@@ -230,5 +233,97 @@ def link_deleted(url):
     text = requests.get(url).text
     return text[text.find("<title>") + 7 : text.find("</title>")] in ["Error | nitter", "イラストコミュニケーションサービス[pixiv]"]
 
+def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(days=7)):
+    g = Github(CONFIG.get("github", "access_code"))
+    out = []
+    for repo in g.get_user().get_repos():
+        # print(repo.name, list(repo.get_branches()))
+        try:
+            for commit in repo.get_commits(since = since):
+                out.append({
+                    "repo": repo.name,
+                    "message": commit.commit.message,
+                    "url": commit.html_url,
+                    "datetime": commit.commit.author.date,
+                    "stats": {
+                        "additions": commit.stats.additions,
+                        "deletions": commit.stats.deletions,
+                        "total": commit.stats.total
+                    }
+                })
+        except Exception as e:
+            print(e)
+
+    return sorted(out, key = lambda a: a["datetime"], reverse = True) 
+
+def scrape_nitter(username, get_until:int):
+    new_tweets = []
+    nitter_url = CONFIG.get("nitter", "internalurl")
+    nitter_port = CONFIG.getint("nitter", "internalport")
+    scrape_new_pages = True
+    url = "http://%s:%d/%s" % (nitter_url, nitter_port, username)
+
+    while scrape_new_pages:
+        tree = html.fromstring(requests.get(url).content)
+        for i, tweetUrlElement in enumerate(tree.xpath('//*[@class="tweet-link"]'), 0):
+            if i > 0 and tweetUrlElement.get("href").split("/")[1] == username:
+                id_ = int(urllib.parse.urlparse(tweetUrlElement.get("href")).path.split("/")[-1])
+                tweet_link = "http://%s:%d%s" % (nitter_url, nitter_port, tweetUrlElement.get("href"))
+
+                if id_ == get_until:
+                    scrape_new_pages = False
+                    break
+
+                try:
+                    dt, replying_to, text, images = parse_tweet(tweet_link)
+                    new_tweets.append((id_, dt, replying_to, text, username, images))
+                    print(dt, text)
+                except IndexError:
+                    print("Couldn't get any more tweets")
+                    scrape_new_pages = False
+                    break
+
+
+        try:
+            cursor = tree.xpath('//*[@class="show-more"]/a')[0].get("href")
+        except IndexError:
+            # no more elements
+            break
+        url = "http://%s:%d/%s%s" % (nitter_url, nitter_port, username, cursor)
+
+    return new_tweets
+
+def parse_tweet(tweet_url):
+    # print(tweet_url)
+    tree = html.fromstring(requests.get(tweet_url).content)
+    # with open("2images.html", "r") as f:
+    #     tree = html.fromstring(f.read())
+
+    main_tweet_elem = tree.xpath('//*[@class="main-tweet"]')[0]
+
+    dt_str = main_tweet_elem.xpath('//*[@class="tweet-published"]')[0].text
+    dt = datetime.datetime.strptime(dt_str.replace("Â", ""), "%b %d, %Y · %I:%M %p UTC")
+    text = tree.xpath('//*[@class="main-tweet"]/div/div/div[2]')[0].text
+    replying_to_elems = tree.xpath('//*[@class="before-tweet thread-line"]/div/a')
+    if replying_to_elems != []:
+        replying_to = int(urllib.parse.urlparse(replying_to_elems[-1].get("href")).path.split("/")[-1])
+    else:
+        replying_to = None
+
+    images = []
+    images_elems = tree.xpath('//*[@class="main-tweet"]/div/div/div[3]/div/div/a/img')
+    for image_elem in images_elems:
+        images.append("https://" + CONFIG.get("nitter", "outsideurl") + urllib.parse.urlparse(image_elem.get("src")).path)
+
+    return dt, replying_to, text, images
+
+
+
+
+
 if __name__ == "__main__":
-    print(get_trans_stats())
+    # print(get_trans_stats())
+
+    print(scrape_nitter(CONFIG.get("twitter", "diary_account"), 1694624180405260291))
+
+    # print(parse_tweet("https://nitter.net/HONMISGENDERER/status/1694231618443981161#m"))

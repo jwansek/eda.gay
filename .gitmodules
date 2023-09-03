@@ -1,0 +1,4 @@
+[submodule "nitter/nitter"]
+	path = nitter/nitter
+	url = git@github.com:zedeus/nitter.git
+	branch = guest_accounts

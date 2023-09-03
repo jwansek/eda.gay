@@ -1,10 +1,10 @@
 from urllib.parse import urlparse
 from dataclasses import dataclass
-from github import Github
 from lxml import html
 import configparser
 import curiouscat
 import threading
+import services
 import operator
 import datetime
 import requests
@@ -40,6 +40,7 @@ class Database:
         return self
 
     def __exit__(self, type, value, traceback):
+        self.__connection.commit()
         self.__connection.close()
 
     def get_header_links(self):
@@ -132,24 +133,18 @@ class Database:
             """)
             return cursor.fetchall()
 
-    def get_cached_tweets(self, numToGet = None, recurse = True):
+    def get_cached_tweets(self, numToGet = None):
         with self.__connection.cursor() as cursor:
+            sql = "SELECT tweet, tweet_id, account FROM diary WHERE account = %s ORDER BY tweeted_at"
+            args = (self.config.get("twitter", "main_account"), )
             if numToGet is not None:
-                cursor.execute("SELECT text, url FROM twitterCache ORDER BY appended DESC LIMIT %s;", (numToGet, ))
+                sql += " LIMIT %s;"
+                args = (self.config.get("twitter", "main_account"), numToGet)
             else:
-                cursor.execute("SELECT text, url FROM twitterCache ORDER BY appended DESC;")
-            if recurse:
-                threading.Thread(target = update_cache).start()
-            return list(cursor.fetchall())
+                sql += ";"
+            cursor.execute(sql, args)
 
-    def update_twitter_cache(self, requested):
-        with self.__connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT url FROM twitterCache;")
-            urls = [i[0] for i in cursor.fetchall()]
-            for url, text in requested:
-                if url not in urls:
-                    cursor.execute("INSERT INTO twitterCache (text, url) VALUES (%s, %s);", (text, url))
-        self.__connection.commit()
+            return [(i[0], "https://%s/%s/status/%d" % (self.config.get("nitter", "outsideurl"), i[2], i[1])) for i in cursor.fetchall()]
 
     def get_cached_commits(self, since = None, recurse = True):
         with self.__connection.cursor() as cursor:
@@ -214,29 +209,38 @@ class Database:
         self.__connection.commit()
         return id_
 
-    def append_diary(self, tweet_id, tweeted_at, replying_to, tweet):
+    def append_diary(self, tweet_id, tweeted_at, replying_to, tweet, account):
+        if tweet is None:
+            tweet = "(Image only)"
         with self.__connection.cursor() as cursor:
-            cursor.execute("INSERT INTO diary VALUES (%s, %s, %s, %s);", (tweet_id, tweeted_at, replying_to, tweet))
-        print("Appended diary with tweet '%s'" % tweet)
+            cursor.execute("INSERT INTO diary VALUES (%s, %s, %s, %s, %s);", (tweet_id, tweeted_at, replying_to, tweet, account))
+        self.__connection.commit()
+
+        print("Appended diary with tweet " + tweet + " @ " + str(tweeted_at))
 
     def append_diary_images(self, tweet_id, imurl):
         with self.__connection.cursor() as cursor:
             cursor.execute("INSERT INTO diaryimages (tweet_id, link) VALUES (%s, %s);", (tweet_id, imurl))
+        self.__connection.commit()
+        
 
-    def get_diary(self):
+    def get_diary(self, account = None):
         threading.Thread(target = update_cache).start()
         out = {}
+        if account is None:
+            account = self.get_my_diary_twitter()
+
         with self.__connection.cursor() as cursor:
             # cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL ORDER BY tweeted_at DESC;")
             # attempt to ignore curiouscat automatic tweets by comparing with the q&a table
-            cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL AND tweet_id NOT IN (SELECT tweet_id FROM diary INNER JOIN qnas ON SUBSTRING(tweet, 1, 16) = SUBSTRING(question, 1, 16)) ORDER BY tweeted_at DESC;")
+            cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL AND tweet_id NOT IN (SELECT tweet_id FROM diary INNER JOIN qnas ON SUBSTRING(tweet, 1, 16) = SUBSTRING(question, 1, 16)) AND account = %s ORDER BY tweeted_at DESC;", (account, ))
             for tweet_id, tweeted_at, tweet_text in cursor.fetchall():
                 # print(tweet_id, tweeted_at, tweet_text)
                 out[tweeted_at] = [{
                     "text": tweet_text, 
                     "images": self.get_diary_image(tweet_id), 
                     "link": "https://%s/%s/status/%d" % (
-                        self.config.get("nitter", "domain"), 
+                        self.config.get("nitter", "outsideurl"), 
                         self.get_my_diary_twitter(), 
                         tweet_id
                     )
@@ -268,45 +272,16 @@ class Database:
             "text": out[1], 
             "images": self.get_diary_image(id_), 
             "link": "https://%s/%s/status/%d" % (
-                self.config.get("nitter", "domain"), self.get_my_diary_twitter(), id_
+                self.config.get("nitter", "outsideurl"), self.get_my_diary_twitter(), id_
             )
         }, id_
 
-    def get_newest_diary_tweet_id(self):
+    def get_newest_diary_tweet_id(self, account = None):
+        if account is None:
+            account = self.get_my_diary_twitter()
         with self.__connection.cursor() as cursor:
-            cursor.execute("SELECT MAX(tweet_id) FROM diary;")
+            cursor.execute("SELECT MAX(tweet_id) FROM diary WHERE account = %s;", (account, ))
             return cursor.fetchone()[0]
-
-    def fetch_diary(self):
-        twitteracc = self.get_my_diary_twitter()
-
-        twitter = twython.Twython(
-            self.config.get("twitter", "app_key"), 
-            access_token = self.config.get("twitter", "oauth_2_token")
-        )
-        
-        for tweet in twitter.search(
-                q = "(from:%s)" % twitteracc, since_id = self.get_newest_diary_tweet_id(),
-                tweet_mode = 'extended'
-            )["statuses"]:
-
-            tweet_id = tweet["id"]
-            tweeted_at = datetime.datetime.strptime(tweet["created_at"], "%a %b %d %H:%M:%S %z %Y")
-            replying_to = tweet["in_reply_to_status_id"]
-            tweet_text = re.sub(r"https://t\.co/\w{10}", "", tweet["full_text"], 0, re.MULTILINE)
-            
-            if tweet["in_reply_to_screen_name"] == twitteracc or tweet["in_reply_to_screen_name"] is None:
-                self.append_diary(tweet_id, tweeted_at, replying_to, tweet_text)
-
-            if "media" in tweet["entities"].keys():
-                associated_images = [
-                    i["media_url_https"].replace("pbs.twimg.com", self.config.get("nitter", "domain") + "/pic") 
-                    for i in tweet["entities"]["media"]
-                ]
-                for im in associated_images:
-                    self.append_diary_images(tweet_id, im)
-
-        self.__connection.commit()
 
     def get_curiouscat_username(self):
         with self.__connection.cursor() as cursor:
@@ -339,7 +314,7 @@ class Database:
             return sorted(cursor.fetchall(), key = operator.itemgetter(2), reverse = True)
 
 def update_cache():
-    # print("updating cache...")
+    print("Updating cache...")
     with Database() as db:
         db.append_curiouscat_qnas(
             curiouscat.get_all_curiouscat_qnas_before(
@@ -347,58 +322,25 @@ def update_cache():
                 db.get_biggest_curiouscat_timestamp()
             )
         )
-        db.fetch_diary()
-        db.update_twitter_cache(request_recent_tweets(10000))
-        # print("Done updating twitter cache...")
-        db.update_commit_cache(request_recent_commits(since = db.get_last_commit_time()))
-        # print("Done updating commit cache...")
-
-CONFIG = configparser.ConfigParser()
-CONFIG.read("edaweb.conf")
-
-def request_recent_tweets(numToGet):
-    tweets = []
-    domain = "http://" + CONFIG.get("nitter", "domain")
-    with Database() as db:
-        for title, url in db.get_header_links():
-            if title == "twitter":
-                break
-    tree = html.fromstring(requests.get(url).content)
-    for i, tweetUrlElement in enumerate(tree.xpath('//*[@class="tweet-link"]'), 0):
-        if i > 0:
-            tweets.append((
-                domain + tweetUrlElement.get("href"),
-                tweetUrlElement.getparent().find_class("tweet-content media-body")[0].text
-            ))
-        if len(tweets) >= numToGet:
-            break
-    return tweets
-            
-def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(days=7)):
-    g = Github(CONFIG.get("github", "access_code"))
-    out = []
-    for repo in g.get_user().get_repos():
-        # print(repo.name, list(repo.get_branches()))
-        try:
-            for commit in repo.get_commits(since = since):
-                out.append({
-                    "repo": repo.name,
-                    "message": commit.commit.message,
-                    "url": commit.html_url,
-                    "datetime": commit.commit.author.date,
-                    "stats": {
-                        "additions": commit.stats.additions,
-                        "deletions": commit.stats.deletions,
-                        "total": commit.stats.total
-                    }
-                })
-        except Exception as e:
-            print(e)
-
-    return sorted(out, key = lambda a: a["datetime"], reverse = True) 
+        print("Finished adding curiouscat...")
+        db.update_commit_cache(services.request_recent_commits(since = db.get_last_commit_time()))
+        print("Finished adding github commits...")
+        for id_, dt, replying_to, text, username, images in services.scrape_nitter(db.get_my_diary_twitter(), db.get_newest_diary_tweet_id()):
+            db.append_diary(id_, dt, replying_to, text, username)
+            for image in images:
+                db.append_diary_images(id_, image)
+        print("Finished getting diary tweets...")
+        for id_, dt, replying_to, text, username, images in services.scrape_nitter(
+            db.config.get("twitter", "main_account"), db.get_newest_diary_tweet_id(db.config.get("twitter", "main_account"))
+            ):
+            db.append_diary(id_, dt, replying_to, text, username)
+            for image in images:
+                db.append_diary_images(id_, image)
+    print("Done updating commit cache...")
 
 
 if __name__ == "__main__":
-    # print(request_recent_commits())
     with Database() as db:
-        print(db.get_curiouscat_qnas())
+        print(db.get_cached_tweets())
+
+    # update_cache()
