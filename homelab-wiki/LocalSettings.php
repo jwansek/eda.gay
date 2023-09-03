@@ -129,7 +129,6 @@ $wgDefaultSkin = "monobook";
 
 # Enabled skins.
 # The following skins were automatically enabled:
-wfLoadSkin( 'Citizen' );
 wfLoadSkin( 'MinervaNeue' );
 wfLoadSkin( 'MonoBook' );
 wfLoadSkin( 'Timeless' );

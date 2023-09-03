@@ -7,11 +7,6 @@ RUN set -x; \
     php -r "readfile('https://getcomposer.org/installer');" | php \
     && mv composer.phar /usr/local/bin/composer
 
-# get skins
-RUN set -x; \
-    cd $MW_HOME/skins \
-    && git clone https://github.com/StarCitizenTools/mediawiki-skins-Citizen Citizen
-
 # get extensions
 RUN set -x; \
     cd $MW_HOME/extensions \
