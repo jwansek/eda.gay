@@ -277,15 +277,14 @@ def scrape_nitter(username, get_until:int):
                 try:
                     dt, replying_to, text, images = parse_tweet(tweet_link)
                     new_tweets.append((id_, dt, replying_to, text, username, images))
-                    print(dt, text)
+                    print(dt, "'%s'" % text)
                 except IndexError:
                     print("Couldn't get any more tweets")
                     scrape_new_pages = False
                     break
                 except ConnectionError:
                     print("Rate limited, try again later")
-                    scrape_new_pages = False
-                    break
+                    return []
 
 
         try:
@@ -312,7 +311,9 @@ def parse_tweet(tweet_url):
 
     dt_str = main_tweet_elem.xpath('//*[@class="tweet-published"]')[0].text
     dt = datetime.datetime.strptime(dt_str.replace("Â", ""), "%b %d, %Y · %I:%M %p UTC")
-    text = tree.xpath('//*[@class="main-tweet"]/div/div/div[2]')[0].text
+    text = tree.xpath('//*[@class="main-tweet"]/div/div/div[2]')[0].text_content() 
+    if text == "":
+        text = "[Image only]"
     replying_to_elems = tree.xpath('//*[@class="before-tweet thread-line"]/div/a')
     if replying_to_elems != []:
         replying_to = int(urllib.parse.urlparse(replying_to_elems[-1].get("href")).path.split("/")[-1])
@@ -326,13 +327,10 @@ def parse_tweet(tweet_url):
 
     return dt, replying_to, text, images
 
-
-
-
-
 if __name__ == "__main__":
     # print(get_trans_stats())
 
     print(scrape_nitter(CONFIG.get("twitter", "diary_account"), 1697430888617840909))
+    print(scrape_nitter("estrogenizedboy", 1698107440489734640))
 
     # print(parse_tweet("https://nitter.net/HONMISGENDERER/status/1694231618443981161#m"))
