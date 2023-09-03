@@ -282,6 +282,10 @@ def scrape_nitter(username, get_until:int):
                     print("Couldn't get any more tweets")
                     scrape_new_pages = False
                     break
+                except ConnectionError:
+                    print("Rate limited, try again later")
+                    scrape_new_pages = False
+                    break
 
 
         try:
@@ -299,6 +303,11 @@ def parse_tweet(tweet_url):
     # with open("2images.html", "r") as f:
     #     tree = html.fromstring(f.read())
 
+    rate_limited_elem = tree.xpath("/html/body/div/div/div/span")
+    if rate_limited_elem != []:
+        if rate_limited_elem[0].text == "Instance has been rate limited.":
+            raise ConnectionError("Instance has been rate limited.")
+
     main_tweet_elem = tree.xpath('//*[@class="main-tweet"]')[0]
 
     dt_str = main_tweet_elem.xpath('//*[@class="tweet-published"]')[0].text
@@ -309,7 +318,7 @@ def parse_tweet(tweet_url):
         replying_to = int(urllib.parse.urlparse(replying_to_elems[-1].get("href")).path.split("/")[-1])
     else:
         replying_to = None
-
+        
     images = []
     images_elems = tree.xpath('//*[@class="main-tweet"]/div/div/div[3]/div/div/a/img')
     for image_elem in images_elems:
@@ -324,6 +333,6 @@ def parse_tweet(tweet_url):
 if __name__ == "__main__":
     # print(get_trans_stats())
 
-    print(scrape_nitter(CONFIG.get("twitter", "diary_account"), 1694624180405260291))
+    print(scrape_nitter(CONFIG.get("twitter", "diary_account"), 1697430888617840909))
 
     # print(parse_tweet("https://nitter.net/HONMISGENDERER/status/1694231618443981161#m"))
