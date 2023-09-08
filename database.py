@@ -135,7 +135,7 @@ class Database:
 
     def get_cached_tweets(self, numToGet = None):
         with self.__connection.cursor() as cursor:
-            sql = "SELECT tweet, tweet_id, account FROM diary WHERE account = %s ORDER BY tweeted_at"
+            sql = "SELECT tweet, tweet_id, account FROM diary WHERE account = %s ORDER BY tweeted_at DESC"
             args = (self.config.get("twitter", "main_account"), )
             if numToGet is not None:
                 sql += " LIMIT %s;"
@@ -330,8 +330,12 @@ def update_cache():
             for image in images:
                 db.append_diary_images(id_, image)
         print("Finished getting diary tweets...")
+        main_account = db.config.get("twitter", "main_account")
+        oldest_tweet = db.get_newest_diary_tweet_id(main_account)
+        print("Fetching tweets from account '%s' older than %d" % (main_account, oldest_tweet))
         for id_, dt, replying_to, text, username, images in services.scrape_nitter(
-            db.config.get("twitter", "main_account"), db.get_newest_diary_tweet_id(db.config.get("twitter", "main_account"))
+                main_account, 
+                oldest_tweet
             ):
             db.append_diary(id_, dt, replying_to, text, username)
             for image in images:
@@ -340,7 +344,7 @@ def update_cache():
 
 
 if __name__ == "__main__":
-    with Database() as db:
-        print(db.get_cached_tweets())
+    #with Database() as db:
+    #    print(db.get_cached_tweets(7))
 
-    # update_cache()
+    update_cache()

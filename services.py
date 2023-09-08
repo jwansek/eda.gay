@@ -330,7 +330,7 @@ def parse_tweet(tweet_url):
 if __name__ == "__main__":
     # print(get_trans_stats())
 
-    print(scrape_nitter(CONFIG.get("twitter", "diary_account"), 1697430888617840909))
+    #print(scrape_nitter(CONFIG.get("twitter", "diary_account"), 1697430888617840909))
     print(scrape_nitter("estrogenizedboy", 1698107440489734640))
 
     # print(parse_tweet("https://nitter.net/HONMISGENDERER/status/1694231618443981161#m"))
