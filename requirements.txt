@@ -1,7 +1,8 @@
 itsdangerous==2.0.1
 PyMySQL==1.0.2
 python_qbittorrent==0.4.2
-Flask==2.1.0
+Werkzeug==2.3.7
+Flask==2.2.2
 PiHole_api
 transmission-clutch
 dataclasses

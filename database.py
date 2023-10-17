@@ -233,7 +233,7 @@ class Database:
         with self.__connection.cursor() as cursor:
             # cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL ORDER BY tweeted_at DESC;")
             # attempt to ignore curiouscat automatic tweets by comparing with the q&a table
-            cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL AND tweet_id NOT IN (SELECT tweet_id FROM diary INNER JOIN qnas ON SUBSTRING(tweet, 1, 16) = SUBSTRING(question, 1, 16)) AND account = %s ORDER BY tweeted_at DESC;", (account, ))
+            cursor.execute("SELECT tweet_id, tweeted_at, tweet FROM diary WHERE replying_to IS NULL AND tweet_id NOT IN (SELECT tweet_id FROM diary INNER JOIN qnas ON SUBSTRING(tweet, 1, 16) = SUBSTRING(question, 1, 16)) AND account IN %s ORDER BY tweeted_at DESC;", ([account, "HONMISGENDERER"], ))
             for tweet_id, tweeted_at, tweet_text in cursor.fetchall():
                 # print(tweet_id, tweeted_at, tweet_text)
                 out[tweeted_at] = [{
@@ -344,7 +344,7 @@ def update_cache():
 
 
 if __name__ == "__main__":
-    #with Database() as db:
-    #    print(db.get_cached_tweets(7))
+    with Database() as db:
+        print(db.get_diary())
 
-    update_cache()
+
