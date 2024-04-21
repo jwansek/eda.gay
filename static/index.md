@@ -1,7 +1,7 @@
 ![(you)s](https://eda.gay/img/braindamage.png)
 
 ## haiiiiiii
-my name is eden and im a 22yo (boymoder) computer science student. i made my own website to encourage others to do so too.
+my name is eden and im a 22yo (boymoder) computer science/robotics postgrad student. i made my own website to encourage others to do so too.
 i'll post my thoughts on here sometimes, and use this site to link to other stuff i host [more about me](/thought?id=2).
 
 [click here for a random image of lio fotia](https://eda.gay/random?tags=lio_fotia)
@@ -12,14 +12,8 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 
 ## FOSS alternative services
 
-(some are currently down as i am temporarily hosting on a VPS instead of my [normal server](https://wiki.eda.gay))
-
 - [nextcloud - dropbox (+ much more!) alternative](https://nc.eda.gay)
-- [invidious - youtube alternative](https://invidious.eda.gay)
-- [nitter - alternative twitter frontend](https://nitter.eda.gay)
 - [git server - github alternative](https://git.eda.gay/)
-- [another git server - this one with gitolite for authentication](https://cgit.eda.gay/gitolite-cgit-docker.git/about/)
-- [bibliogram - less annoying instagram front end](https://bibliogram.eda.gay/applysettings/c8009ec7533d542a90bb1d41563435c1)
 - [jellyfin - web player for ~~legally downloaded~~ TV and films](https://jellyfin.eda.gay) - RIP emby!
 
 these sites are hosted on my [homelab system](https://wiki.eda.gay)

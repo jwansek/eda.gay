@@ -4,7 +4,7 @@ services:
         build:
             context: .
             dockerfile: Dockerfile
-        image: jwansek/edaweb
+        image: reg.reaweb.uk/edaweb
         volumes:
             - /tmp/:/media/ISOs/
             - ./static/:/app/static/
@@ -22,7 +22,7 @@ services:
         build:
             context: ./homelab-wiki
             dockerfile: Dockerfile
-        image: jwansek/edawiki2
+        image: reg.reaweb.uk/edawiki2
         volumes:
             - ./homelab-wiki/images:/var/www/html/images
             - ./homelab-wiki/LocalSettings.php:/var/www/html/LocalSettings.php
@@ -41,7 +41,7 @@ services:
         build:
             context: ./nitter/nitter
             dockerfile: Dockerfile
-        image: jwansek/nitter:latest
+        image: reg.reaweb.uk/nitter:latest
         ports:
             - "127.0.0.1:7777:7777" # Replace with "8080:8080" if you don't use a reverse proxy
         volumes:
