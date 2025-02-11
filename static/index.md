@@ -1,14 +1,14 @@
-![(you)s](https://eda.gay/img/braindamage.png)
+![(you)s](/img/braindamage.png)
+
+site now also avaliable under the domain [boymoder.blog](https://boymoder.blog)!
 
 ## haiiiiiii
-my name is eden and im a 22yo (boymoder) computer science/robotics postgrad student. i made my own website to encourage others to do so too.
+my name is eden and im a 23yo (boymoder) computer science/robotics PhD student. i made my own website to encourage others to do so too.
 i'll post my thoughts on here sometimes, and use this site to link to other stuff i host [more about me](/thought?id=2).
 
-[click here for a random image of lio fotia](https://eda.gay/random?tags=lio_fotia)
+[click here for a random image of lio fotia](/random?tags=lio_fotia)
 
-[click here for a random KawoShin image](https://eda.gay/random?tags=nagisa_kaworu+ikari_shinji+yaoi)
-
-[click here for a linux ISO CD to be posted to you for free](https://eda.gay/isocd)
+[click here for a random KawoShin image](/random?tags=nagisa_kaworu+ikari_shinji+yaoi)
 
 ## FOSS alternative services
 
@@ -18,7 +18,7 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 
 these sites are hosted on my [homelab system](https://wiki.eda.gay)
 
-![startech rack cropped](https://eda.gay/img/IMG_20220811_133224877_HDR_crop.jpg?h=300&w=5000)
+![startech rack cropped](/img/IMG_20220811_133224877_HDR_crop.jpg?h=300&w=5000)
 
 ## nice websites
 - [wiby.me](http://wiby.me/) - search engine for old style websites with limited javascript (my site used to be on here but it got blacklisted for some reason?)
@@ -26,7 +26,7 @@ these sites are hosted on my [homelab system](https://wiki.eda.gay)
 - [4chan.org/lgbt/](https://boards.4channel.org/lgbt/) - but dont blame me if u catch brainworms
 - [https://www.math.uni-bielefeld.de/~sillke/Twister/fun/elevator-fun90.html](https://www.math.uni-bielefeld.de/~sillke/Twister/fun/elevator-fun90.html) any website with a URL like this is gonna be good
 - [boymoder.moe](https://nyaomidev.github.io/boymoder.moe/)
-- [blahaj.quest](https://blahaj.quest/)
+- [boymoders.com](https://boymoders.com)
 - [john.citrons.xyz](https://john.citrons.xyz/) - for the nice 'ads' featured at the bottom of my page
 
 
