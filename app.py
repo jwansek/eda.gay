@@ -70,7 +70,7 @@ def index():
                 **get_template_items("eden's site :3", db),
                 markdown = parser.parse_text(f.read())[0],
                 featured_thoughts = db.get_featured_thoughts(),
-                commits = db.get_cached_commits()[:7],
+                commits = db.get_cached_commits()[:10],
                 sidebar_img = get_sidebar_img(db)
             )
 

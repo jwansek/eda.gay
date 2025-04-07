@@ -149,9 +149,9 @@ class Database:
         threading.Thread(target = update_cache).start()
         with self.__connection.cursor() as cursor:
             if since is not None:
-                cursor.execute("SELECT message, url, commitTime, additions, deletions, total FROM commitCache WHERE commitTime > %s ORDER BY commitTime DESC;", (since, ))
+                cursor.execute("SELECT DISTINCT message, url, commitTime, additions, deletions, total FROM commitCache WHERE commitTime > %s ORDER BY commitTime DESC;", (since, ))
             else:
-                cursor.execute("SELECT message, url, commitTime, additions, deletions, total FROM commitCache ORDER BY commitTime DESC;")
+                cursor.execute("SELECT DISTINCT message, url, commitTime, additions, deletions, total FROM commitCache ORDER BY commitTime DESC;")
             # i think i might have spent too long doing functional programming
             return [{
                 "repo": urlparse(i[1]).path.split("/")[2],
@@ -174,9 +174,10 @@ class Database:
 
     def update_commit_cache(self, requested):
         with self.__connection.cursor() as cursor:
-            cursor.execute("SELECT DISTINCT url FROM commitCache;")
-            urls = [i[0] for i in cursor.fetchall()]
             for commit in requested:
+                cursor.execute("SELECT DISTINCT url FROM commitCache;")
+                urls = [i[0] for i in cursor.fetchall()]
+
                 if commit["url"] not in urls:
                     cursor.execute("""
                     INSERT INTO commitCache (message, url, commitTime, additions, deletions, total)
@@ -245,7 +246,7 @@ def update_cache():
 
 
 if __name__ == "__main__":
-    # update_cache()
+    update_cache()
     import json
     with Database() as db:
         print(db.get_cached_commits()[0])
