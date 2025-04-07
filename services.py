@@ -10,7 +10,6 @@ import requests
 import datetime
 import urllib
 import docker
-import clutch
 import random
 import queue
 import json
@@ -39,90 +38,6 @@ def humanbytes(B):
       return '{0:.2f} GB'.format(B/GB)
    elif TB <= B:
       return '{0:.2f} TB'.format(B/TB)
-
-def timeout(func):
-    # cant get this to work with queue.Queue() for some reason?
-    # this works but Manager() uses an extra thread than Queue()
-    manager = multiprocessing.Manager()
-    returnVan = manager.list()
-    # ti = time.time()
-   
-    def runFunc(q, func):
-        q.append(func())
-
-    def beginTimeout():
-        t = multiprocessing.Process(target = runFunc, args = (returnVan, func))
-        t.start()
-
-        t.join(timeout = CONFIG["servicetimeout"].getint("seconds"))
-
-        # print("Request took:", time.time() - ti)
-        try:
-            return returnVan[0]
-        except IndexError:
-            if t.is_alive():
-                t.terminate()
-
-    return beginTimeout
-
-@timeout
-def get_docker_stats():
-    client = docker.DockerClient(base_url = "tcp://%s:%s" % (CONFIG["docker"]["url"], CONFIG["docker"]["port"]))
-    return {
-        container.name: container.status
-        for container in client.containers.list(all = True)
-    }
-
-# currently unused
-@timeout
-def get_qbit_stats():
-    numtorrents = 0
-    bytes_dl = 0
-    bytes_up = 0
-    qb = qbittorrent.Client('http://%s:%s/' % (CONFIG["qbittorrent"]["url"], CONFIG["qbittorrent"]["port"]))
-    qb.login(username = CONFIG["qbittorrent"]["user"], password = CONFIG["qbittorrent"]["passwd"])
-
-    for torrent in qb.torrents():
-        numtorrents += 1
-        bytes_up += torrent["uploaded"] 
-        bytes_dl += torrent["downloaded"]
-        
-    return {
-       "bytes_dl": humanbytes(bytes_dl),
-       "bytes_up": humanbytes(bytes_up),
-       "num": numtorrents,
-       "ratio": "%.3f" % (float(bytes_up) / float(bytes_dl))
-    }
-
-@timeout
-def get_trans_stats():
-    client = clutch.client.Client(
-        address = "http://%s:%s/transmission/rpc" % (CONFIG["transmission"]["url"], CONFIG["transmission"]["port"]),
-        # username = CONFIG["transmission"]["username"],
-        # password = CONFIG["transmission"]["password"]
-    )
-    stats = json.loads(client.session.stats().json())
-    active_for = datetime.timedelta(seconds = stats["arguments"]["cumulative_stats"]["seconds_active"])
-    return {
-       "bytes_dl": humanbytes(stats["arguments"]["cumulative_stats"]["downloaded_bytes"]),
-       "bytes_up": humanbytes(stats["arguments"]["cumulative_stats"]["uploaded_bytes"]),
-       "num": stats["arguments"]["torrent_count"],
-       "ratio": "%.3f" % (float(stats["arguments"]["cumulative_stats"]["uploaded_bytes"]) / float(stats["arguments"]["cumulative_stats"]["downloaded_bytes"])),
-       "active_for": str(active_for)
-    }
-
-@timeout
-def get_pihole_stats():
-    pihole = ph.PiHole(CONFIG["pihole"]["url"])
-    return {
-        "status": pihole.status,
-        "queries": pihole.total_queries,
-        "clients": pihole.unique_clients,
-        "percentage": pihole.ads_percentage,
-        "blocked": pihole.blocked,
-        "domains": pihole.domain_count,
-        "last_updated": str(datetime.datetime.fromtimestamp(pihole.gravity_last_updated["absolute"]))
-    }
 
 @dataclass
 class SafebooruImage:
@@ -252,7 +167,7 @@ def request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(
                     }
                 })
         except Exception as e:
-            print(e)
+            print(repo, e)
 
     return sorted(out, key = lambda a: a["datetime"], reverse = True) 
 
@@ -331,6 +246,8 @@ if __name__ == "__main__":
     # print(get_trans_stats())
 
     #print(scrape_nitter(CONFIG.get("twitter", "diary_account"), 1697430888617840909))
-    print(scrape_nitter("estrogenizedboy", 1698107440489734640))
+    # print(scrape_nitter("estrogenizedboy", 1698107440489734640))
 
     # print(parse_tweet("https://nitter.net/HONMISGENDERER/status/1694231618443981161#m"))
+
+    print(request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(days=30)))

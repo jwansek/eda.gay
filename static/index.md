@@ -18,7 +18,8 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 
 these sites are hosted on my [homelab system](https://wiki.eda.gay)
 
-![startech rack cropped](/img/IMG_20220811_133224877_HDR_crop.jpg?h=300&w=5000)
+![startech 8u rack cropped](/img/GcyexeCW0AAYssz.jpg?w=300&h=5000)
+![startech 12u rack cropped](/img/Startech.jpg?h=250&w=5000)
 
 ## nice websites
 - [wiby.me](http://wiby.me/) - search engine for old style websites with limited javascript (my site used to be on here but it got blacklisted for some reason?)

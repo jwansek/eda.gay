@@ -70,7 +70,6 @@ def index():
                 **get_template_items("eden's site :3", db),
                 markdown = parser.parse_text(f.read())[0],
                 featured_thoughts = db.get_featured_thoughts(),
-                tweets = db.get_cached_tweets(7) + [("view all tweets...", db.get_my_twitter())],
                 commits = db.get_cached_commits()[:7],
                 sidebar_img = get_sidebar_img(db)
             )
@@ -79,16 +78,6 @@ def index():
 def robots():
     return flask.send_from_directory("static", "robots.txt")
 
-@app.route("/diary")
-def diary():
-    with database.Database() as db:
-        return flask.render_template(
-            "diary.html.j2",
-            **get_template_items("diary", db),
-            diary = db.get_diary(),
-            diary_account = db.config.get("twitter", "diary_account")
-        )
-
 @app.route("/discord")
 def discord():
     with database.Database() as db:
@@ -96,17 +85,6 @@ def discord():
             "discord.html.j2", 
             **get_template_items("discord", db),
             discord = CONFIG["discord"]["username"]
-        )
-
-@app.route("/services")
-def serve_services():
-    with database.Database() as db:
-        return flask.render_template(
-            "services.html.j2",
-            **get_template_items("services", db),
-            docker = services.get_docker_stats(),
-            trans = services.get_trans_stats(),
-            pihole = services.get_pihole_stats()
         )
 
 @app.route("/thought")
@@ -247,8 +225,7 @@ def serve_questions():
         return flask.render_template(
             "questions.html.j2",
             **get_template_items("questions and answers", db),
-            curiouscat_username = db.get_curiouscat_username(),
-            qnas = db.get_curiouscat_qnas()
+            qnas = db.get_qnas()
         )
 
 if __name__ == "__main__":

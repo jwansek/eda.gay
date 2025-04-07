@@ -16,7 +16,7 @@
         <h3>recent git commits:</h3>
         <ul>
             {% for commit in commits %}
-                <li>[<a href="{{'https://git.eda.gay/' + commit['repo']}}">{{commit["repo"]}}</a>] {+{{commit["stats"]["additions"]}}; -{{commit["stats"]["deletions"]}}} <a href="{{commit['url'].replace('github.com/jwansek', 'git.eda.gay')}}">{{commit["message"]}}</a> - <a href="{{commit['url']}}">github mirror</a></li>
+                <li>[<a href="{{commit['git_repo_url']}}">{{commit["repo"]}}</a>] {+{{commit["stats"]["additions"]}}; -{{commit["stats"]["deletions"]}}} <a href="{{commit['git_commit_url']}}">{{commit["message"]}}</a> - <a href="{{commit['github_commit_url']}}">github mirror</a></li>
             {% endfor %}
         </ul>
     </section>
