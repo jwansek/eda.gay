@@ -1,5 +1,5 @@
-FROM ubuntu:latest
-MAINTAINER Eden Attenborough "eda@e.email"
+FROM ubuntu:22.04
+MAINTAINER Eden Attenborough "eden.attenborough@outlook.com"
 ENV TZ=Europe/London
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update -y
