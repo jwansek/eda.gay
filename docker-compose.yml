@@ -9,6 +9,7 @@ services:
             - /tmp/:/media/ISOs/
             - ./static/:/app/static/
             - ./edaweb.conf:/app/edaweb.conf
+            - ./edaweb-docker.pem:/keys/docker-key.pem
         ports:
             - "6969:6969"
         networks:
@@ -46,5 +47,3 @@ networks:
         external:
             name: mariadb
 
-volumes:
-    nitter-redis:
