@@ -224,14 +224,19 @@ class Database:
                 cursor.execute("SELECT curiouscat_id FROM qnas WHERE curiouscat_id = %s;", (qna["id"], ))
                 if cursor.fetchone() is None:
 
-                    cursor.execute("INSERT INTO `qnas` VALUES (%s, %s, %s, %s, %s);", (
-                        qna["id"], qna["link"], qna["datetime"], qna["question"], qna["answer"]
+                    cursor.execute("INSERT INTO `qnas` VALUES (%s, %s, %s, %s, %s, %s);", (
+                        qna["id"], qna["link"], qna["datetime"], qna["question"], qna["answer"], qna["host"]
                     ))
-                    print("Appended question with timestamp %s" % datetime.datetime.fromtimestamp(qna["id"]).isoformat())
+                    print("Appended question with timestamp %s" % qna["datetime"].isoformat())
 
                 else:
-                    print("Skipped question with timestamp %s" % datetime.datetime.fromtimestamp(qna["id"]).isoformat())
+                    print("Skipped question with timestamp %s" % qna["datetime"].isoformat())
         self.__connection.commit()
+
+    def get_oldest_qna(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT MAX(timestamp) FROM qnas;")
+            return cursor.fetchone()[0]
 
     def get_qnas(self):
         with self.__connection.cursor() as cursor:
@@ -243,12 +248,12 @@ def update_cache():
     with Database() as db:
         db.update_commit_cache(services.request_recent_commits(since = db.get_last_commit_time()))
         print("Finished adding github commits...")
+        db.append_qnas(services.scrape_whispa(db.config.get("qnas", "url"), since = db.get_oldest_qna()))
+        print("Finished parsing Q&As...")
 
 
 if __name__ == "__main__":
     update_cache()
-    import json
-    with Database() as db:
-        print(db.get_cached_commits()[0])
+    
 
 

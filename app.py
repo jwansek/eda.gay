@@ -225,6 +225,7 @@ def serve_questions():
         return flask.render_template(
             "questions.html.j2",
             **get_template_items("questions and answers", db),
+            qnas_link = CONFIG.get("qnas", "url"),
             qnas = db.get_qnas()
         )
 

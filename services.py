@@ -6,6 +6,7 @@ import multiprocessing
 import pihole as ph
 import qbittorrent
 import configparser
+import math as maths
 import requests
 import datetime
 import urllib
@@ -242,6 +243,30 @@ def parse_tweet(tweet_url):
 
     return dt, replying_to, text, images
 
+def scrape_whispa(whispa_url, since):
+    tree = html.fromstring(requests.get(whispa_url).content.decode())
+    qnas = []
+    # we're not doing proper HTML scraping here really... since the site uses client side rendering
+    # we rather parse the JS scripts to get the JSON payload of useful information... sadly this looks horrible
+    for i, script in enumerate(tree.xpath("/html/body/script"), 0):
+        js = str(script.text)
+        if "receivedFeedback" in js:
+            # my god this is horrible...
+            for j in json.loads(json.loads(js[19:-1])[1][2:])[0][3]["loadedUser"]["receivedFeedback"]:
+                dt = datetime.datetime.fromisoformat(j["childFeedback"][0]["createdAt"][:-1])
+            
+                qnas.append({
+                    # "id": int(str(maths.modf(maths.log(int(j["id"], 16)))[0])[2:]),
+                    "id": int(dt.timestamp()),
+                    "link": None,
+                    "datetime": dt,
+                    "question": j["content"],
+                    "answer": j["childFeedback"][0]["content"],
+                    "host": "whispa.sh"
+                })
+    return qnas
+
+
 if __name__ == "__main__":
     # print(get_trans_stats())
 
@@ -250,4 +275,6 @@ if __name__ == "__main__":
 
     # print(parse_tweet("https://nitter.net/HONMISGENDERER/status/1694231618443981161#m"))
 
-    print(request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(days=30)))
+    # print(request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(days=30)))
+
+    print(scrape_whispa(CONFIG.get("qnas", "url"), datetime.datetime.fromtimestamp(0.0)))

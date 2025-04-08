@@ -147,6 +147,10 @@ aside {
     margin-top: 10px;
 }
 
+.qnaheader {
+    font-weight: bold;
+}
+
 blockquote span {
     color: #789922;
 }
