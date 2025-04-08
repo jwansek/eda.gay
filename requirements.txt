@@ -1,15 +1,13 @@
 itsdangerous==2.0.1
 PyMySQL==1.0.2
-python_qbittorrent==0.4.2
+transmission_rpc==4.1.0
 Werkzeug==2.3.7
 Flask==2.2.2
 PiHole_api
-transmission-clutch
 dataclasses
 docker
-PiHole-api
+APiHole
 Pillow==9.4.0
-python-qbittorrent==0.4.2
 PyGithub
 lxml
 requests
@@ -19,3 +17,5 @@ houdini.py
 Pygments
 mistune==2.0.3
 twython==3.8.2
+fabric
+paramiko

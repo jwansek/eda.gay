@@ -16,6 +16,8 @@ i'll post my thoughts on here sometimes, and use this site to link to other stuf
 - [git server - github alternative](https://git.eda.gay/)
 - [jellyfin - web player for ~~legally downloaded~~ TV and films](https://jellyfin.eda.gay) - RIP emby!
 
+[see the services im running right now](/services) (takes a couple seconds to load)
+
 these sites are hosted on my [homelab system](https://wiki.eda.gay)
 
 ![startech 8u rack cropped](/img/GcyexeCW0AAYssz.jpg?w=300&h=5000)

@@ -1,3 +1,5 @@
+*.pem
+*.pub
 homelab-wiki/wiki.env
 homelab-wiki/images/*
 edaweb.conf

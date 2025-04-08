@@ -2,7 +2,7 @@ from paste.translogger import TransLogger
 from waitress import serve
 from PIL import Image
 import configparser
-import webbrowser
+import transmission_rpc
 import downloader
 import datetime
 import database
@@ -77,6 +77,17 @@ def index():
 @app.route("/robots.txt")
 def robots():
     return flask.send_from_directory("static", "robots.txt")
+
+@app.route("/services")
+def serve_services():
+    with database.Database() as db:
+        return flask.render_template(
+            "services.html.j2",
+            **get_template_items("services", db),
+            docker = services.get_all_docker_containers(CONFIG.get("ssh", "docker_key_path")),
+            trans = services.get_torrent_stats(),
+            pihole = services.get_pihole_stats()
+        )
 
 @app.route("/discord")
 def discord():

@@ -3,8 +3,9 @@ from io import StringIO
 from lxml import html, etree
 from github import Github
 import multiprocessing
-import pihole as ph
-import qbittorrent
+import paramiko.client
+from APiHole import PiHole
+import transmission_rpc
 import configparser
 import math as maths
 import requests
@@ -12,6 +13,8 @@ import datetime
 import urllib
 import docker
 import random
+import subprocess
+import fabric
 import queue
 import json
 import time
@@ -266,6 +269,68 @@ def scrape_whispa(whispa_url, since):
                 })
     return qnas
 
+def get_docker_containers(host, ssh_key_path):
+    result = fabric.Connection(
+        host = host,
+        user = "root",
+        connect_kwargs = {
+            "key_filename": ssh_key_path,
+            "look_for_keys": False
+        }
+    ).run('docker ps -a -s --format "table {{.Names}};{{.Status}};{{.Image}}"', hide = True)
+    return [line.split(";") for line in result.stdout.split("\n")[1:-1]]
+
+def get_all_docker_containers(ssh_key_path):
+    containers = {}
+    for host, name in CONFIG["docker_hosts"].items():
+        print(host)
+        containers[(host, name)] = get_docker_containers(host, ssh_key_path)
+    return containers
+
+def timeout(func):
+    # cant get this to work with queue.Queue() for some reason?
+    # this works but Manager() uses an extra thread than Queue()
+    manager = multiprocessing.Manager()
+    returnVan = manager.list()
+    # ti = time.time()
+   
+    def runFunc(q, func):
+        q.append(func())
+
+    def beginTimeout():
+        t = multiprocessing.Process(target = runFunc, args = (returnVan, func))
+        t.start()
+
+        t.join(timeout = CONFIG["servicetimeout"].getint("seconds"))
+
+        # print("Request took:", time.time() - ti)
+        try:
+            return returnVan[0]
+        except IndexError:
+            if t.is_alive():
+                t.terminate()
+
+    return beginTimeout
+
+@timeout
+def get_torrent_stats():
+    client = transmission_rpc.client.Client(
+        host = CONFIG.get("transmission", "host")
+    )
+    s = vars(client.session_stats())["fields"]
+    return {
+        "Active torrents:": s["activeTorrentCount"],
+        "Downloaded:": humanbytes(s["cumulative-stats"]["downloadedBytes"]),
+        "Uploaded:": humanbytes(s["cumulative-stats"]["uploadedBytes"]),
+        "Active time:": str(datetime.timedelta(seconds = s["cumulative-stats"]["secondsActive"])),
+        "Files added:": s["cumulative-stats"]["filesAdded"],
+        "Current upload speed": humanbytes(s["uploadSpeed"]) + "s/S",
+        "Current download speed:": humanbytes(s["downloadSpeed"]) + "s/S"
+    }
+
+@timeout
+def get_pihole_stats():
+    return PiHole.GetSummary(CONFIG.get("pihole", "url"), CONFIG.get("pihole", "key"), True)
 
 if __name__ == "__main__":
     # print(get_trans_stats())
@@ -277,4 +342,7 @@ if __name__ == "__main__":
 
     # print(request_recent_commits(since = datetime.datetime.now() - datetime.timedelta(days=30)))
 
-    print(scrape_whispa(CONFIG.get("qnas", "url"), datetime.datetime.fromtimestamp(0.0)))
+    # print(scrape_whispa(CONFIG.get("qnas", "url"), datetime.datetime.fromtimestamp(0.0)))
+    # print(get_all_docker_containers(os.path.join(os.path.dirname(__file__), "edaweb-docker.pem")))
+
+    print(get_torrent_stats())

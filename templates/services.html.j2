@@ -3,96 +3,54 @@
 <article id=statusTables>
     <section id=docker>
         <h2>docker</h2>
-        {% if docker == None %}
-            <p>Couldn't access the docker API. Is sherpa running?</p>
-        {% else %}
-            <table>
-                {% for name, status in docker.items() %}
-                    <tr>
-                        <td>{{name}}</td>
-                        {% if status == "running" %}
-                            <td class=running>{{status}}</td>
-                        {% else %}
-                            <td class=notRunning>{{status}}</td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
+        <ul>
+            {% for host, containers in docker.items() %}
+                <h4>{{ "%s - %s" % (host[0], host[1]) }}</h4>
+                <table>
+                    {% for name, status, image in containers %}
+                        <tr>
+                            <td>{{ name }}</td>
+                            {% if "Up" in status %}
+                                <td class=running>{{ status }}</td>
+                            {% else %}
+                                <td class=notRunning>{{ status }}</td>
+                            {% endif %}
+                            <td>{{ image }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% endfor %}
+        </ul>
     </section>
+
     <section id="torrents">
         <h2>transmission</h2>
         {% if trans == None %}
             <p>Couldn't access the transmission API. Is docker container running?</p>
         {% else %}
             <table>
-                <tr>
-                    <td>downloaded</td>
-                    <td>{{trans["bytes_dl"]}}</td>
-                </tr>
-                <tr>
-                    <td>uploaded</td>
-                    <td>{{trans["bytes_up"]}}</td>
-                </tr>
-                <tr>
-                    <td>torrents</td>
-                    <td>{{trans["num"]}}</td>
-                </tr>
-                <tr>
-                    <td>ratio</td>
-                    <td>{{trans["ratio"]}}</td>
-                </tr>
-                <tr>
-                    <td>active for</td>
-                    <td>{{trans["active_for"]}}</td>
-                </tr>
+                {% for k, v in trans.items() %}
+                    <tr>
+                        <td>{{ k }}</td>
+                        <td>{{ v }}</td>
+                    </tr>
+                {% endfor %}
             </table>
         {% endif %}
-    <br>
-    <a>statistics of some old torrent clients which were shut down recently ;_;</a>
-    <br>
-    <img src="https://nitter.eda.gay/pic/media%2FFRnF3kcXwAAHE6v.png%3Fname%3Dorig">
-    <img src="https://nitter.eda.gay/pic/media%2FFRnF6I0WUAEq4FD.png%3Fname%3Dorig">
-    <img src="/img/photo_2022-12-07_14-06-03.jpg">
     </section>
+    
     <section id=pihole>
         <h2>pihole</h2>
         {% if pihole == None %}
             <p>Couldn't access the pihole API. Is docker container running?</p>
         {% else %}
             <table>
-                <tr>
-                    <td>status</td>
-                    {% if pihole["status"] == "enabled" %}
-                        <td class=running>{{pihole["status"]}}</td>
-                    {% else %}
-                        <td class=notRunning>{{pihole["status"]}}</td>
-                    {% endif %}
-                </tr>
-                <tr>
-                    <td>queries</td>
-                    <td>{{pihole["queries"]}}</td>
-                </tr>
-                <tr>
-                    <td>clients</td>
-                    <td>{{pihole["clients"]}}</td>
-                </tr>
-                <tr>
-                    <td>percentage blocked</td>
-                    <td>{{pihole["percentage"]}}%</td>
-                </tr>
-                <tr>
-                    <td>blocked requests</td>
-                    <td>{{pihole["blocked"]}}</td>
-                </tr>
-                <tr>
-                    <td>domains in blocklist</td>
-                    <td>{{pihole["domains"]}}</td>
-                </tr>
-                <tr>
-                    <td>last updated</td>
-                    <td>{{pihole["last_updated"]}}</td>
-                </tr>
+                {% for k, v in pihole.items() %}
+                    <tr>
+                        <td>{{ k }}</td>
+                        <td>{{ v }}</td>
+                    </tr>
+                {% endfor %}
             </table>
         {% endif %}
     </section>
